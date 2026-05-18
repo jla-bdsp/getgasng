@@ -1,0 +1,213 @@
+{
+  "meta": {
+    "title": "GetGasNG — LPG Gas Delivery in Port Harcourt",
+    "description": "Port Harcourt's fastest LPG cooking gas delivery. Order online, track in real-time, delivered to your door in under an hour."
+  },
+  "nav": {
+    "phone": "+2348000000000",
+    "cta": "Order Gas Now"
+  },
+  "hero": {
+    "eyebrow": "Now serving Port Harcourt",
+    "title_line1": "Gas delivered",
+    "title_line2": "to your door",
+    "title_highlight": "under an hour",
+    "subtitle": "Order LPG cooking gas online — choose your cylinder size, pick a time, and we'll deliver safely to your home anywhere in Port Harcourt. Fast, certified, and always reliable.",
+    "cta_primary": "Order Gas Now",
+    "cta_secondary": "See How It Works",
+    "trust": [
+      "DPR Certified",
+      "< 60 min delivery",
+      "4.9 ★ rated"
+    ]
+  },
+  "stats": [
+    { "number": 12000, "suffix": "+",    "label": "Deliveries completed" },
+    { "number": 15,    "suffix": "+",    "label": "Areas covered in PH" },
+    { "number": 42,    "suffix": " min", "label": "Average delivery time" },
+    { "number": 49,    "suffix": "/5.0", "label": "Customer rating" }
+  ],
+  "steps": {
+    "badge": "Simple & Fast",
+    "heading": "Gas delivered in 3 easy steps",
+    "subtitle": "From order to delivery — no queues, no hassle, no waiting in traffic. Just a few taps and your gas is on the way.",
+    "items": [
+      {
+        "title": "Choose Your Cylinder",
+        "description": "Select from our range of certified LPG cylinders — 3 kg, 6 kg, 12.5 kg, or 25 kg. Pick a one-off refill or subscribe for automatic deliveries."
+      },
+      {
+        "title": "Set Your Location & Time",
+        "description": "Enter your address in Port Harcourt and choose delivery now or schedule for a convenient time. We cover GRA, Rumuola, Woji, Trans Amadi, D/Line, and more."
+      },
+      {
+        "title": "Receive & Pay Safely",
+        "description": "Our certified delivery agent arrives at your door. Track them live on the app. Pay by card, transfer, or cash — whatever works for you."
+      }
+    ]
+  },
+  "features": {
+    "badge": "Why GetGasNG",
+    "heading": "Built for Port Harcourt families",
+    "subtitle": "Everything you need for worry-free gas delivery — safe, fast, and designed around your life.",
+    "items": [
+      {
+        "title": "Lightning-Fast Delivery",
+        "description": "Order before 6 PM and receive your gas the same day. Our Port Harcourt riders are always nearby and ready, with an average delivery time of 42 minutes."
+      },
+      {
+        "title": "Live Order Tracking",
+        "description": "Watch your delivery on a live map from the moment it leaves our depot to the moment it arrives at your gate. No more guessing or waiting by the door."
+      },
+      {
+        "title": "Safety-First Standards",
+        "description": "All our cylinders are DPR-certified and regularly inspected. Our delivery agents are trained in safe handling — your family's safety is our highest priority."
+      },
+      {
+        "title": "Auto-Refill Subscriptions",
+        "description": "Never run out of gas again. Set your preferred cylinder size and refill frequency — weekly, fortnightly, or monthly — and we'll handle the rest automatically."
+      },
+      {
+        "title": "Flexible Payments",
+        "description": "Pay with debit/credit cards, bank transfers, USSD payments, and cash on delivery. Our payment options are designed to be as convenient as the delivery itself."
+      },
+      {
+        "title": "24/7 Customer Support",
+        "description": "Our Port Harcourt-based support team is available via phone, WhatsApp, and in-app chat — any time, any day. We're always here when you need us."
+      }
+    ]
+  },
+  "plans": {
+    "badge": "Transparent Pricing",
+    "heading": "Choose your cylinder size",
+    "subtitle": "Honest prices with no hidden charges. Prices shown are for gas refills. New cylinder purchases are also available.",
+    "note": "Prices are for gas refills and may vary with current market rates.",
+    "items": [
+      {
+        "size": "3 kg",
+        "emoji": "🔵",
+        "description": "Perfect for single-person homes, small kitchens & backup cylinders",
+        "price": "₦2,800",
+        "popular": false,
+        "features": ["Same-day delivery", "Live tracking", "Certified supplier"],
+        "cta": "Order 3 kg"
+      },
+      {
+        "size": "6 kg",
+        "emoji": "🟡",
+        "description": "Ideal for couples and small families with moderate daily cooking needs",
+        "price": "₦5,400",
+        "popular": false,
+        "features": ["Same-day delivery", "Live tracking", "Refill reminders"],
+        "cta": "Order 6 kg"
+      },
+      {
+        "size": "12.5 kg",
+        "emoji": "🟠",
+        "description": "The standard family cylinder — perfect for a busy household of 4–6 people",
+        "price": "₦11,000",
+        "popular": true,
+        "features": ["Priority same-day delivery", "Live tracking & ETA alerts", "Auto-refill subscription", "Dedicated support line"],
+        "cta": "Order 12.5 kg →"
+      },
+      {
+        "size": "25 kg",
+        "emoji": "🔴",
+        "description": "For large families, guest houses, restaurants & small businesses",
+        "price": "₦22,000",
+        "popular": false,
+        "features": ["Scheduled deliveries", "Live tracking", "Business account & invoicing", "Bulk order discounts"],
+        "cta": "Order 25 kg"
+      }
+    ]
+  },
+  "coverage": {
+    "badge": "Port Harcourt Coverage",
+    "heading": "We deliver across Port Harcourt & environs",
+    "text": "Our growing network of certified depots means we can reach most areas of Port Harcourt within the hour. Don't see your area? We're expanding — get on the waitlist.",
+    "areas": [
+      "GRA Phase 1 & 2", "Old GRA", "Rumuola", "Woji",
+      "Trans Amadi", "D/Line", "Eliozu", "Rumuokwurusi",
+      "Rumuigbo", "Ozuoba", "Peter Odili Road", "Abuloma"
+    ],
+    "cta": "Check My Area"
+  },
+  "testimonials": {
+    "badge": "Trusted by Families",
+    "heading": "Port Harcourt families love GetGasNG",
+    "subtitle": "Don't take our word for it — here's what our customers say about us.",
+    "items": [
+      {
+        "quote": "GetGasNG has completely changed how I manage my home. I used to send my driver across town to queue at the gas station. Now I order from my phone and it arrives before I'm done cooking breakfast. Absolutely brilliant service.",
+        "name": "Mrs. Adaeze Okafor",
+        "role": "Homemaker, GRA Phase 2",
+        "initials": "AO",
+        "color": "linear-gradient(135deg,#F97316,#EA580C)"
+      },
+      {
+        "quote": "As an engineer, I appreciate reliability. GetGasNG has never once failed a scheduled delivery in six months. The live tracking is accurate, the riders are professional, and the subscription plan means I never think about gas anymore.",
+        "name": "Engr. Emeka Chukwu",
+        "role": "Petroleum Engineer, Trans Amadi",
+        "initials": "EC",
+        "color": "linear-gradient(135deg,#2563EB,#1D4ED8)"
+      },
+      {
+        "quote": "The safety aspect really sold me. With young children at home I was always nervous about gas handling. The GetGasNG agent checks for leaks after installation and explains everything clearly. That peace of mind is priceless.",
+        "name": "Dr. Amaka Nwosu",
+        "role": "Physician, Old GRA",
+        "initials": "AN",
+        "color": "linear-gradient(135deg,#16A34A,#15803D)"
+      }
+    ]
+  },
+  "app": {
+    "badge": "Download the App",
+    "heading": "Gas at your fingertips.",
+    "heading_highlight": "Anytime, anywhere in PH.",
+    "text": "The GetGasNG app puts everything in your pocket — order, track, schedule, and manage your gas delivery without leaving the comfort of your home.",
+    "perks": [
+      "Real-time delivery tracking on a live map",
+      "Auto-refill — set it and forget it",
+      "Smart notifications & refill reminders",
+      "Secure in-app payments & receipts"
+    ]
+  },
+  "faq": {
+    "badge": "Common Questions",
+    "heading": "Frequently asked questions",
+    "subtitle": "Everything you need to know about GetGasNG. Can't find your answer? Call or WhatsApp us.",
+    "items": [
+      {
+        "question": "How fast is delivery in Port Harcourt?",
+        "answer": "Our average delivery time across Port Harcourt is 42 minutes. For most areas in GRA, Rumuola, Woji, and Trans Amadi, we consistently deliver in under an hour. For same-day delivery, orders must be placed before 6 PM."
+      },
+      {
+        "question": "Do I need to be home for the delivery?",
+        "answer": "For safety reasons, someone must be present to receive the cylinder and sign off on the delivery. You can also authorise a trusted adult — a housekeeper or family member — to receive on your behalf. Simply note this in your delivery instructions."
+      },
+      {
+        "question": "What payment methods do you accept?",
+        "answer": "We accept debit/credit cards (Visa, Mastercard), bank transfers, USSD payments, and cash on delivery. For subscription plans, your preferred payment method is saved securely for automated billing."
+      },
+      {
+        "question": "Are your cylinders DPR certified and safe?",
+        "answer": "Absolutely. All our LPG cylinders are sourced from DPR-licensed suppliers and undergo regular safety inspections. Our delivery agents are trained in safe LPG handling and will check connections after installation for your peace of mind."
+      },
+      {
+        "question": "Can I buy a new cylinder, or just refill?",
+        "answer": "You can do both. Our prices shown are for gas refills (you exchange your empty cylinder). If you need a brand-new cylinder with gas, select \"New Cylinder\" in the app or call us — pricing varies by size. We'll deliver it fully loaded and ready to use."
+      },
+      {
+        "question": "How does the auto-refill subscription work?",
+        "answer": "Choose your cylinder size and refill frequency (weekly, fortnightly, or monthly). We'll automatically schedule your next delivery and send a reminder notification 24 hours before. You can pause, reschedule, or cancel anytime in the app with no penalties."
+      }
+    ]
+  },
+  "footer": {
+    "tagline": "Port Harcourt's most trusted LPG delivery service. Fast, certified, and built for modern families who value their time.",
+    "phone": "+2348000000000",
+    "email": "hello@getgasng.com",
+    "address": "Port Harcourt, Rivers State, Nigeria",
+    "copyright": "© 2025 GetGasNG Ltd. All rights reserved."
+  }
+}

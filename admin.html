@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GetGasNG — Content Editor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --primary:#F97316;--primary-dark:#EA580C;--primary-light:#FFF7ED;
+  --navy:#0F172A;--navy2:#1E293B;--navy3:#334155;
+  --slate:#64748B;--border:#E2E8F0;--bg:#F8FAFC;--white:#fff;
+  --green:#16A34A;--red:#DC2626;
+  --font:'Poppins',sans-serif;
+  --radius:10px;--trans:.2s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:var(--font);font-size:14px;background:var(--bg);color:var(--navy2)}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;border:none;background:none;font-family:inherit}
+input,textarea,select{font-family:inherit;font-size:inherit}
+
+/* ── Login screen ─────────────────────────────────── */
+#login-screen{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;background:var(--navy);
+}
+.login-box{
+  background:var(--white);border-radius:20px;padding:48px 40px;
+  width:100%;max-width:400px;text-align:center;
+  box-shadow:0 40px 80px rgba(0,0,0,.3);
+}
+.login-logo{
+  width:52px;height:52px;background:var(--primary);border-radius:14px;
+  display:grid;place-items:center;margin:0 auto 20px;
+}
+.login-logo svg{width:28px;height:28px;color:#fff}
+.login-box h1{font-size:1.4rem;font-weight:700;margin-bottom:6px}
+.login-box p{font-size:.88rem;color:var(--slate);margin-bottom:32px}
+.login-field{
+  width:100%;padding:13px 16px;border:1.5px solid var(--border);
+  border-radius:var(--radius);font-size:.95rem;outline:none;
+  transition:border-color var(--trans);margin-bottom:14px;
+}
+.login-field:focus{border-color:var(--primary)}
+.login-btn{
+  width:100%;padding:14px;background:var(--primary);color:#fff;
+  border-radius:var(--radius);font-size:.95rem;font-weight:600;
+  transition:background var(--trans);
+}
+.login-btn:hover{background:var(--primary-dark)}
+.login-error{
+  color:var(--red);font-size:.83rem;margin-top:10px;display:none;
+}
+
+/* ── App shell ────────────────────────────────────── */
+#app{display:none;height:100vh;overflow:hidden}
+
+/* ── Sidebar ─────────────────────────────────────── */
+.sidebar{
+  position:fixed;top:0;left:0;bottom:0;width:260px;
+  background:var(--navy);display:flex;flex-direction:column;
+  z-index:10;overflow-y:auto;
+}
+.sidebar-header{
+  padding:22px 20px 16px;border-bottom:1px solid rgba(255,255,255,.06);
+  flex-shrink:0;
+}
+.sidebar-brand{
+  display:flex;align-items:center;gap:10px;margin-bottom:4px;
+}
+.sidebar-brand-icon{
+  width:34px;height:34px;background:rgba(249,115,22,.15);
+  border-radius:9px;display:grid;place-items:center;
+}
+.sidebar-brand-icon svg{width:18px;height:18px;color:var(--primary)}
+.sidebar-brand-name{font-size:1rem;font-weight:700;color:#fff}
+.sidebar-brand-name span{color:var(--primary)}
+.sidebar-sub{font-size:.72rem;color:rgba(255,255,255,.4);margin-top:2px}
+
+.sidebar-nav{padding:12px 10px;flex:1}
+.sidebar-nav-label{
+  font-size:.65rem;font-weight:600;color:rgba(255,255,255,.3);
+  text-transform:uppercase;letter-spacing:.8px;
+  padding:8px 10px 4px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;
+  border-radius:8px;color:rgba(255,255,255,.6);font-size:.85rem;
+  font-weight:500;cursor:pointer;transition:all var(--trans);
+  margin-bottom:2px;
+}
+.nav-item svg{width:16px;height:16px;flex-shrink:0}
+.nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav-item.active{background:rgba(249,115,22,.15);color:var(--primary)}
+
+.sidebar-actions{
+  padding:16px 10px;border-top:1px solid rgba(255,255,255,.06);
+  flex-shrink:0;display:flex;flex-direction:column;gap:8px;
+}
+.action-btn{
+  display:flex;align-items:center;gap:9px;padding:11px 14px;
+  border-radius:8px;font-size:.83rem;font-weight:600;
+  transition:all var(--trans);width:100%;
+}
+.action-btn svg{width:16px;height:16px;flex-shrink:0}
+.action-btn--save{background:var(--primary);color:#fff}
+.action-btn--save:hover{background:var(--primary-dark)}
+.action-btn--export{background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.1)}
+.action-btn--export:hover{background:rgba(255,255,255,.1);color:#fff}
+.action-btn--preview{background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.1)}
+.action-btn--preview:hover{background:rgba(255,255,255,.1);color:#fff}
+.action-btn--reset{color:rgba(255,255,255,.35);font-size:.75rem;padding:8px 14px;}
+.action-btn--reset:hover{color:var(--red)}
+
+/* ── Main area ────────────────────────────────────── */
+.main{
+  margin-left:260px;height:100vh;overflow-y:auto;
+  display:flex;flex-direction:column;
+}
+.main-header{
+  position:sticky;top:0;background:rgba(248,250,252,.95);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--border);
+  padding:16px 32px;display:flex;align-items:center;justify-content:space-between;
+  z-index:5;flex-shrink:0;
+}
+.main-header h2{font-size:1.05rem;font-weight:700}
+.main-header p{font-size:.82rem;color:var(--slate)}
+
+.save-indicator{
+  display:flex;align-items:center;gap:7px;font-size:.8rem;
+  font-weight:500;color:var(--slate);transition:color var(--trans);
+}
+.save-indicator svg{width:15px;height:15px}
+.save-indicator.saved{color:var(--green)}
+.save-indicator.saving{color:var(--primary)}
+
+.main-body{padding:32px;flex:1}
+
+/* ── Section panel ────────────────────────────────── */
+.section-panel{display:none}
+.section-panel.active{display:block}
+
+.field-group{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:14px;padding:24px;margin-bottom:20px;
+}
+.field-group-title{
+  font-size:.78rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.6px;color:var(--slate);margin-bottom:18px;
+  padding-bottom:10px;border-bottom:1px solid var(--border);
+}
+
+.field-row{margin-bottom:16px}
+.field-row:last-child{margin-bottom:0}
+.field-label{
+  display:block;font-size:.8rem;font-weight:600;
+  color:var(--navy2);margin-bottom:6px;
+}
+.field-hint{font-size:.72rem;color:var(--slate);font-weight:400;margin-left:6px}
+.field-input{
+  width:100%;padding:10px 13px;border:1.5px solid var(--border);
+  border-radius:8px;font-size:.88rem;outline:none;color:var(--navy2);
+  transition:border-color var(--trans);
+}
+.field-input:focus{border-color:var(--primary)}
+.field-textarea{
+  width:100%;padding:10px 13px;border:1.5px solid var(--border);
+  border-radius:8px;font-size:.88rem;outline:none;color:var(--navy2);
+  transition:border-color var(--trans);resize:vertical;min-height:80px;
+  line-height:1.6;
+}
+.field-textarea:focus{border-color:var(--primary)}
+
+/* ── Array items ─────────────────────────────────── */
+.array-wrap{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.array-item{
+  display:flex;gap:10px;align-items:flex-start;
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:8px;padding:12px 14px;
+}
+.array-item-fields{flex:1;display:flex;flex-direction:column;gap:8px}
+.array-item-num{
+  font-size:.72rem;font-weight:700;color:var(--slate);
+  padding-top:2px;min-width:20px;
+}
+.array-item-del{
+  width:28px;height:28px;border-radius:7px;
+  background:rgba(220,38,38,.08);color:var(--red);
+  display:grid;place-items:center;flex-shrink:0;transition:background var(--trans);
+}
+.array-item-del:hover{background:rgba(220,38,38,.15)}
+.array-item-del svg{width:14px;height:14px}
+.add-item-btn{
+  display:flex;align-items:center;gap:7px;padding:9px 14px;
+  background:var(--primary-light);color:var(--primary-dark);
+  border-radius:8px;font-size:.82rem;font-weight:600;
+  transition:all var(--trans);width:fit-content;
+}
+.add-item-btn:hover{background:#FEE4CC}
+.add-item-btn svg{width:15px;height:15px}
+
+/* ── Stats grid ───────────────────────────────────── */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* ── Plan cards ──────────────────────────────────── */
+.plan-editor{border:1.5px solid var(--border);border-radius:10px;padding:16px;background:var(--bg)}
+.plan-editor-header{
+  display:flex;align-items:center;gap:10px;margin-bottom:14px;
+  padding-bottom:10px;border-bottom:1px solid var(--border);
+}
+.plan-editor-emoji{font-size:1.5rem}
+.plan-editor-title{font-weight:700;font-size:.92rem}
+.plan-popular-badge{
+  margin-left:auto;font-size:.68rem;font-weight:700;
+  background:var(--primary);color:#fff;padding:2px 8px;
+  border-radius:20px;letter-spacing:.4px;text-transform:uppercase;
+}
+
+/* ── Toast ────────────────────────────────────────── */
+.toast{
+  position:fixed;bottom:28px;right:28px;
+  background:var(--navy);color:#fff;
+  padding:12px 20px;border-radius:10px;font-size:.85rem;font-weight:500;
+  box-shadow:0 8px 24px rgba(0,0,0,.2);
+  transform:translateY(80px);opacity:0;transition:all .3s ease;
+  z-index:999;display:flex;align-items:center;gap:8px;
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast svg{width:16px;height:16px;color:var(--primary)}
+
+/* ── Responsive ─────────────────────────────────── */
+@media(max-width:768px){
+  .sidebar{width:100%;height:auto;position:relative}
+  #app{overflow:auto;height:auto}
+  .main{margin-left:0}
+  .stats-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ LOGIN ═══════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"/>
+      </svg>
+    </div>
+    <h1>Content Editor</h1>
+    <p>Sign in to edit your website content</p>
+    <input type="password" id="pw-input" class="login-field" placeholder="Enter password" autocomplete="current-password"/>
+    <button class="login-btn" id="login-btn">Sign In →</button>
+    <div class="login-error" id="login-error">Incorrect password. Please try again.</div>
+  </div>
+</div>
+
+<!-- ═══════════ APP ═══════════ -->
+<div id="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="sidebar-brand-name">Get<span>Gas</span>NG</div>
+        </div>
+      </div>
+      <div class="sidebar-sub">Content Editor</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-label">Page Sections</div>
+      <div class="nav-item active" data-section="hero">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Hero
+      </div>
+      <div class="nav-item" data-section="stats">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Stats Bar
+      </div>
+      <div class="nav-item" data-section="steps">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        How It Works
+      </div>
+      <div class="nav-item" data-section="features">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+        Features
+      </div>
+      <div class="nav-item" data-section="plans">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a2 2 0 012-2z"/></svg>
+        Plans & Pricing
+      </div>
+      <div class="nav-item" data-section="coverage">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Coverage
+      </div>
+      <div class="nav-item" data-section="testimonials">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+        Testimonials
+      </div>
+      <div class="nav-item" data-section="app">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+        App Download
+      </div>
+      <div class="nav-item" data-section="faq">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        FAQ
+      </div>
+      <div class="nav-item" data-section="footer">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        Footer & Contact
+      </div>
+    </nav>
+
+    <div class="sidebar-actions">
+      <button class="action-btn action-btn--save" id="btn-save">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+        Save Changes
+      </button>
+      <button class="action-btn action-btn--export" id="btn-export">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        Export content.json
+      </button>
+      <a href="index.html" target="_blank" class="action-btn action-btn--preview">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+        Preview Site
+      </a>
+      <button class="action-btn action-btn--reset" id="btn-reset">
+        ↺ Reset to Defaults
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main">
+    <div class="main-header">
+      <div>
+        <h2 id="section-title">Hero Section</h2>
+        <p id="section-desc">Edit the headline, subtitle, and call-to-action copy</p>
+      </div>
+      <div class="save-indicator" id="save-indicator">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+        All changes saved
+      </div>
+    </div>
+
+    <div class="main-body">
+
+      <!-- ─ HERO ─────────────────────────────────────────────────── -->
+      <div class="section-panel active" id="panel-hero">
+        <div class="field-group">
+          <div class="field-group-title">Eyebrow & Headline</div>
+          <div class="field-row">
+            <label class="field-label">Eyebrow pill text <span class="field-hint">shown above the headline</span></label>
+            <input class="field-input" data-path="hero.eyebrow"/>
+          </div>
+          <div class="field-row">
+            <label class="field-label">Headline — Line 1</label>
+            <input class="field-input" data-path="hero.title_line1"/>
+          </div>
+          <div class="field-row">
+            <label class="field-label">Headline — Line 2</label>
+            <input class="field-input" data-path="hero.title_line2"/>
+          </div>
+          <div class="field-row">
+            <label class="field-label">Highlighted phrase <span class="field-hint">shown in orange on line 3</span></label>
+            <input class="field-input" data-path="hero.title_highlight"/>
+          </div>
+        </div>
+        <div class="field-group">
+          <div class="field-group-title">Subtitle & CTAs</div>
+          <div class="field-row">
+            <label class="field-label">Subtitle paragraph</label>
+            <textarea class="field-textarea" data-path="hero.subtitle"></textarea>
+          </div>
+          <div class="field-row">
+            <label class="field-label">Primary button text</label>
+            <input class="field-input" data-path="hero.cta_primary"/>
+          </div>
+          <div class="field-row">
+            <label class="field-label">Secondary button text</label>
+            <input class="field-input" data-path="hero.cta_secondary"/>
+          </div>
+        </div>
+        <div class="field-group">
+          <div class="field-group-title">Trust Badges <span class="field-hint">(shown below the buttons)</span></div>
+          <div id="hero-trust-wrap" class="array-wrap"></div>
+          <button class="add-item-btn" id="add-trust">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Add badge
+          </button>
+        </div>
+      </div>
+
+      <!-- ─ STATS ────────────────────────────────────────────────── -->
+      <div class="section-panel" id="panel-stats">
+        <div class="field-group">
+          <div class="field-group-title">Statistics Bar — 4 numbers</div>
+          <div id="stats-wrap" class="stats-grid"></div>
+        </div>
+      </div>
+
+      <!-- ─ STEPS ────────────────────────────────────────────────── -->
+      <div class="section-panel" id="panel-steps">
+        <div class="field-group">
+          <div class="field-group-title">Section Header</div>
+          <div class="field-row"><label class="field-label">Badge text</label><input class="field-input" data-path="steps.badge"/></div>
+          <div class="field-row"><label class="field-label">Heading</label><input class="field-input" data-path="steps.heading"/></div>
+          <div class="field-row"><label class="field-label">Subtitle</label><textarea class="field-textarea" data-path="steps.subtitle"></textarea></div>
+        </div>
+        <div class="field-group">
+          <div class="field-group-title">Steps</div>
+          <div id="steps-wrap" class="array-wrap"></div>
+        </div>
+      </div>
+
+      <!-- ─ FEATURES ─────────────────────────────────────────────── -->
+      <div class="section-panel" id="panel-features">
+        <div class="field-group">
+          <div class="field-group-title">Section Header</div>
+          <div class="field-row"><label class="field-label">Badge text</label><input class="field-input" data-path="features.badge"/></div>
+          <div class="field-row"><label class="field-label">Heading</label><input class="field-input" data-path="features.heading"/></div>
+          <div class="field-row"><label class="field-label">Subtitle</label><textarea class="field-textarea" data-path="features.subtitle"></textarea></div>
+        </div>
+        <div class="field-group">
+          <div class="field-group-title">Feature Cards</div>
+          <div id="features-wrap" class="array-wrap"></div>
+          <button class="add-item-btn" id="add-feature" style="margin-top:8px">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Add feature
+          </button>
+        </div>
+      </div>
+
+      <!-- ─ PLANS ─────────────────────────────────────────────────── -->
+      <div class="section-panel" id="panel-plans">
+        <div class="field-group">
+          <div class="field-group-title">Section Header</div>
+          <div class="field-row"><label class="field-label">Badge text</label><input class="field-input" data-path="plans.badge"/></div>
+          <div class="field-row"><label class="field-label">Heading</label><input class="field-input" data-path="plans.heading"/></div>
+          <div class="field-row"><label class="field-label">Subtitle</label><textarea class="field-textarea" data-path="plans.subtitle"></textarea></div>
+          <div class="field-row"><label class="field-label">Pricing note <span class="field-hint">(below the cards)</span></label><textarea class="field-textarea" style="min-height:52px" data-path="plans.note"></textarea></div>
+        </div>
+        <div class="field-group">
+          <div class="field-group-title">Cylinder Plans</div>
+          <div id="plans-wrap" class="array-wrap"></div>
+        </div>
+      </div>
+
+      <!-- ─ COVERAGE ──────────────────────────────────────────────── -->
+      <div class="section-panel" id="panel-coverage">
+        <div class="field-group">
+          <div class="field-group-title">Section Copy</div>
+          <div class="field-row"><label class="field-label">Badge text</label><input class="field-input" data-path="coverage.badge"/></div>
+          <div class="field-row"><label class="field-label">Heading</label><input class="field-input" data-path="coverage.heading"/></div>
+          <div class="field-row"><label class="field-label">Paragraph</label><textarea class="field-textarea" data-path="coverage.text"></textarea></div>
+          <div class="field-row"><label class="field-label">Button text</label><input class="field-input" data-path="coverage.cta"/></div>
+        </div>
+        <div class="field-group">
+          <div class="field-group-title">Delivery Areas <span class="field-hint">(one area per row)</span></div>
+          <div id="areas-wrap" class="array-wrap"></div>
+          <button class="add-item-btn" id="add-area" style="margin-top:8px">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Add area
+          </button>
+        </div>
+      </div>
+
+      <!-- ─ TESTIMONIALS ───────────────────────────────────────────── -->
+      <div class="section-panel" id="panel-testimonials">
+        <div class="field-group">
+          <div class="field-group-title">Section Header</div>
+          <div class="field-row"><label class="field-label">Badge text</label><input class="field-input" data-path="testimonials.badge"/></div>
+          <div class="field-row"><label class="field-label">Heading</label><input class="field-input" data-path="testimonials.heading"/></div>
+          <div class="field-row"><label class="field-label">Subtitle</label><textarea class="field-textarea" data-path="testimonials.subtitle"></textarea></div>
+        </div>
+        <div class="field-group">
+          <div class="field-group-title">Testimonials</div>
+          <div id="testi-wrap" class="array-wrap"></div>
+          <button class="add-item-btn" id="add-testi" style="margin-top:8px">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Add testimonial
+          </button>
+        </div>
+      </div>
+
+      <!-- ─ APP ────────────────────────────────────────────────────── -->
+      <div class="section-panel" id="panel-app">
+        <div class="field-group">
+          <div class="field-group-title">App Section Copy</div>
+          <div class="field-row"><label class="field-label">Badge text</label><input class="field-input" data-path="app.badge"/></div>
+          <div class="field-row"><label class="field-label">Heading</label><input class="field-input" data-path="app.heading"/></div>
+          <div class="field-row"><label class="field-label">Heading highlight <span class="field-hint">(shown in orange)</span></label><input class="field-input" data-path="app.heading_highlight"/></div>
+          <div class="field-row"><label class="field-label">Paragraph</label><textarea class="field-textarea" data-path="app.text"></textarea></div>
+        </div>
+        <div class="field-group">
+          <div class="field-group-title">App Feature Perks</div>
+          <div id="perks-wrap" class="array-wrap"></div>
+          <button class="add-item-btn" id="add-perk" style="margin-top:8px">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Add perk
+          </button>
+        </div>
+      </div>
+
+      <!-- ─ FAQ ────────────────────────────────────────────────────── -->
+      <div class="section-panel" id="panel-faq">
+        <div class="field-group">
+          <div class="field-group-title">Section Header</div>
+          <div class="field-row"><label class="field-label">Badge text</label><input class="field-input" data-path="faq.badge"/></div>
+          <div class="field-row"><label class="field-label">Heading</label><input class="field-input" data-path="faq.heading"/></div>
+          <div class="field-row"><label class="field-label">Subtitle</label><textarea class="field-textarea" data-path="faq.subtitle"></textarea></div>
+        </div>
+        <div class="field-group">
+          <div class="field-group-title">Questions & Answers</div>
+          <div id="faq-wrap" class="array-wrap"></div>
+          <button class="add-item-btn" id="add-faq" style="margin-top:8px">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Add question
+          </button>
+        </div>
+      </div>
+
+      <!-- ─ FOOTER ──────────────────────────────────────────────────── -->
+      <div class="section-panel" id="panel-footer">
+        <div class="field-group">
+          <div class="field-group-title">Brand & Tagline</div>
+          <div class="field-row"><label class="field-label">Brand tagline</label><textarea class="field-textarea" data-path="footer.tagline"></textarea></div>
+          <div class="field-row"><label class="field-label">Copyright line</label><input class="field-input" data-path="footer.copyright"/></div>
+        </div>
+        <div class="field-group">
+          <div class="field-group-title">Contact Information</div>
+          <div class="field-row"><label class="field-label">Phone number</label><input class="field-input" data-path="footer.phone" type="tel"/></div>
+          <div class="field-row"><label class="field-label">Email address</label><input class="field-input" data-path="footer.email" type="email"/></div>
+          <div class="field-row"><label class="field-label">Address</label><input class="field-input" data-path="footer.address"/></div>
+        </div>
+        <div class="field-group">
+          <div class="field-group-title">Navigation Call-to-Action</div>
+          <div class="field-row"><label class="field-label">Nav CTA button text</label><input class="field-input" data-path="nav.cta"/></div>
+        </div>
+      </div>
+
+    </div><!-- /main-body -->
+  </main>
+
+</div><!-- /app -->
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+  <span id="toast-msg">Changes saved!</span>
+</div>
+
+<script>
+// ── Config ──────────────────────────────────────────────────────────────────
+const ADMIN_PASSWORD = 'getgas2025';
+const STORAGE_KEY    = 'gg_content';
+
+// ── Auth ────────────────────────────────────────────────────────────────────
+const loginScreen = document.getElementById('login-screen');
+const appEl       = document.getElementById('app');
+const pwInput     = document.getElementById('pw-input');
+const loginBtn    = document.getElementById('login-btn');
+const loginErr    = document.getElementById('login-error');
+
+function tryLogin() {
+  if (pwInput.value === ADMIN_PASSWORD) {
+    loginScreen.style.display = 'none';
+    appEl.style.display = 'flex';
+    boot();
+  } else {
+    loginErr.style.display = 'block';
+    pwInput.value = '';
+    pwInput.focus();
+  }
+}
+loginBtn.addEventListener('click', tryLogin);
+pwInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
+// ── State ────────────────────────────────────────────────────────────────────
+let content = null;
+let saveTimer = null;
+
+function setPath(obj, path, val) {
+  const keys = path.split('.');
+  let cur = obj;
+  for (let i = 0; i < keys.length - 1; i++) {
+    if (!(keys[i] in cur)) cur[keys[i]] = {};
+    cur = cur[keys[i]];
+  }
+  cur[keys[keys.length - 1]] = val;
+}
+function getPath(obj, path) {
+  return path.split('.').reduce((o, k) => o?.[k], obj);
+}
+
+// ── Load content ─────────────────────────────────────────────────────────────
+async function loadContent() {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) { try { return JSON.parse(stored); } catch(e) {} }
+  try {
+    const r = await fetch('content.json');
+    if (r.ok) return await r.json();
+  } catch(e) {}
+  return null;
+}
+
+// ── Save ─────────────────────────────────────────────────────────────────────
+function scheduleAutoSave() {
+  clearTimeout(saveTimer);
+  setIndicator('saving');
+  saveTimer = setTimeout(saveNow, 800);
+}
+function saveNow() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(content));
+  setIndicator('saved');
+}
+function setIndicator(state) {
+  const el = document.getElementById('save-indicator');
+  el.className = 'save-indicator ' + state;
+  el.querySelector('span') && (el.querySelector('span').textContent =
+    state === 'saved' ? 'All changes saved' : 'Saving…');
+}
+
+// ── Toast ────────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+const sectionMeta = {
+  hero:         { title: 'Hero Section',          desc: 'Edit the headline, subtitle, and call-to-action copy' },
+  stats:        { title: 'Stats Bar',             desc: 'The four key numbers shown on the dark banner' },
+  steps:        { title: 'How It Works',          desc: 'Three-step process section' },
+  features:     { title: 'Features Section',      desc: 'Six feature cards explaining your service benefits' },
+  plans:        { title: 'Plans & Pricing',       desc: 'Cylinder sizes, prices, and included features' },
+  coverage:     { title: 'Coverage Section',      desc: 'Delivery area map copy and neighbourhood list' },
+  testimonials: { title: 'Testimonials',          desc: 'Customer quotes and names' },
+  app:          { title: 'App Download Section',  desc: 'App store section copy and feature perks' },
+  faq:          { title: 'FAQ Section',           desc: 'Questions and answers accordion' },
+  footer:       { title: 'Footer & Contact',      desc: 'Contact details, tagline, and copyright' },
+};
+
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const sec = item.dataset.section;
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    item.classList.add('active');
+    document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + sec).classList.add('active');
+    document.getElementById('section-title').textContent = sectionMeta[sec].title;
+    document.getElementById('section-desc').textContent  = sectionMeta[sec].desc;
+  });
+});
+
+// ── Bind simple inputs ─────────────────────────────────────────────────────────
+function bindSimpleFields() {
+  document.querySelectorAll('[data-path]').forEach(el => {
+    const path = el.dataset.path;
+    const val  = getPath(content, path);
+    if (val !== undefined) el.value = val;
+    el.addEventListener('input', () => {
+      setPath(content, path, el.value);
+      scheduleAutoSave();
+    });
+  });
+}
+
+// ── Render array helpers ──────────────────────────────────────────────────────
+const delBtn = () => {
+  const b = document.createElement('button');
+  b.className = 'array-item-del';
+  b.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>`;
+  return b;
+};
+function strField(val, placeholder) {
+  const i = document.createElement('input');
+  i.className = 'field-input'; i.value = val || ''; i.placeholder = placeholder || '';
+  return i;
+}
+function taField(val, placeholder) {
+  const t = document.createElement('textarea');
+  t.className = 'field-textarea'; t.value = val || ''; t.placeholder = placeholder || '';
+  return t;
+}
+
+// ── Hero trust badges ─────────────────────────────────────────────────────────
+function renderTrustWrap() {
+  const wrap = document.getElementById('hero-trust-wrap');
+  wrap.innerHTML = '';
+  (content.hero.trust || []).forEach((txt, i) => {
+    const row = document.createElement('div'); row.className = 'array-item';
+    const num = document.createElement('span'); num.className = 'array-item-num'; num.textContent = i + 1;
+    const inp = strField(txt, 'Badge text');
+    inp.addEventListener('input', () => { content.hero.trust[i] = inp.value; scheduleAutoSave(); });
+    const del = delBtn();
+    del.addEventListener('click', () => { content.hero.trust.splice(i, 1); renderTrustWrap(); scheduleAutoSave(); });
+    row.append(num, inp, del); wrap.appendChild(row);
+  });
+}
+document.getElementById('add-trust').addEventListener('click', () => {
+  content.hero.trust.push('New badge'); renderTrustWrap(); scheduleAutoSave();
+});
+
+// ── Stats ─────────────────────────────────────────────────────────────────────
+function renderStats() {
+  const wrap = document.getElementById('stats-wrap');
+  wrap.innerHTML = '';
+  (content.stats || []).forEach((stat, i) => {
+    const card = document.createElement('div'); card.className = 'plan-editor';
+    card.innerHTML = `<div class="plan-editor-header"><div class="plan-editor-title">Stat ${i + 1}</div></div>`;
+    const nRow = document.createElement('div'); nRow.className = 'field-row';
+    nRow.innerHTML = '<label class="field-label">Number</label>';
+    const nInp = strField(stat.number, 'e.g. 12000');
+    nInp.type = 'number';
+    nInp.addEventListener('input', () => { content.stats[i].number = parseInt(nInp.value) || 0; scheduleAutoSave(); });
+    nRow.appendChild(nInp);
+
+    const sRow = document.createElement('div'); sRow.className = 'field-row';
+    sRow.innerHTML = '<label class="field-label">Suffix</label>';
+    const sInp = strField(stat.suffix, 'e.g. +');
+    sInp.addEventListener('input', () => { content.stats[i].suffix = sInp.value; scheduleAutoSave(); });
+    sRow.appendChild(sInp);
+
+    const lRow = document.createElement('div'); lRow.className = 'field-row';
+    lRow.innerHTML = '<label class="field-label">Label</label>';
+    const lInp = strField(stat.label, 'e.g. Deliveries completed');
+    lInp.addEventListener('input', () => { content.stats[i].label = lInp.value; scheduleAutoSave(); });
+    lRow.appendChild(lInp);
+
+    card.append(nRow, sRow, lRow); wrap.appendChild(card);
+  });
+}
+
+// ── Steps ─────────────────────────────────────────────────────────────────────
+function renderStepsWrap() {
+  const wrap = document.getElementById('steps-wrap');
+  wrap.innerHTML = '';
+  (content.steps.items || []).forEach((s, i) => {
+    const row = document.createElement('div'); row.className = 'array-item';
+    const num = document.createElement('span'); num.className = 'array-item-num'; num.textContent = i + 1;
+    const fields = document.createElement('div'); fields.className = 'array-item-fields';
+    const tInp = strField(s.title, 'Step title');
+    tInp.addEventListener('input', () => { content.steps.items[i].title = tInp.value; scheduleAutoSave(); });
+    const dTa = taField(s.description, 'Step description');
+    dTa.addEventListener('input', () => { content.steps.items[i].description = dTa.value; scheduleAutoSave(); });
+    fields.append(tInp, dTa);
+    const del = delBtn();
+    del.addEventListener('click', () => { content.steps.items.splice(i, 1); renderStepsWrap(); scheduleAutoSave(); });
+    row.append(num, fields, del); wrap.appendChild(row);
+  });
+}
+
+// ── Features ──────────────────────────────────────────────────────────────────
+function renderFeaturesWrap() {
+  const wrap = document.getElementById('features-wrap');
+  wrap.innerHTML = '';
+  (content.features.items || []).forEach((f, i) => {
+    const row = document.createElement('div'); row.className = 'array-item';
+    const num = document.createElement('span'); num.className = 'array-item-num'; num.textContent = i + 1;
+    const fields = document.createElement('div'); fields.className = 'array-item-fields';
+    const tInp = strField(f.title, 'Feature title');
+    tInp.addEventListener('input', () => { content.features.items[i].title = tInp.value; scheduleAutoSave(); });
+    const dTa = taField(f.description, 'Feature description');
+    dTa.addEventListener('input', () => { content.features.items[i].description = dTa.value; scheduleAutoSave(); });
+    fields.append(tInp, dTa);
+    const del = delBtn();
+    del.addEventListener('click', () => { content.features.items.splice(i, 1); renderFeaturesWrap(); scheduleAutoSave(); });
+    row.append(num, fields, del); wrap.appendChild(row);
+  });
+}
+document.getElementById('add-feature').addEventListener('click', () => {
+  content.features.items.push({ title: 'New Feature', description: '' });
+  renderFeaturesWrap(); scheduleAutoSave();
+});
+
+// ── Plans ─────────────────────────────────────────────────────────────────────
+function renderPlansWrap() {
+  const wrap = document.getElementById('plans-wrap');
+  wrap.innerHTML = '';
+  (content.plans.items || []).forEach((p, i) => {
+    const card = document.createElement('div'); card.className = 'plan-editor';
+    card.style.marginBottom = '14px';
+    card.innerHTML = `
+      <div class="plan-editor-header">
+        <div class="plan-editor-emoji">${p.emoji || '⚪'}</div>
+        <div class="plan-editor-title">${p.size || 'Plan ' + (i + 1)}</div>
+        ${p.popular ? '<div class="plan-popular-badge">Popular</div>' : ''}
+      </div>`;
+
+    const makeRow = (label, el) => {
+      const r = document.createElement('div'); r.className = 'field-row';
+      r.innerHTML = `<label class="field-label">${label}</label>`;
+      r.appendChild(el); return r;
+    };
+
+    const sizeInp  = strField(p.size, 'e.g. 12.5 kg');
+    sizeInp.addEventListener('input', () => { content.plans.items[i].size = sizeInp.value; scheduleAutoSave(); });
+    const priceInp = strField(p.price, 'e.g. ₦11,000');
+    priceInp.addEventListener('input', () => { content.plans.items[i].price = priceInp.value; scheduleAutoSave(); });
+    const descTa   = taField(p.description, 'Short description');
+    descTa.style.minHeight = '60px';
+    descTa.addEventListener('input', () => { content.plans.items[i].description = descTa.value; scheduleAutoSave(); });
+    const ctaInp   = strField(p.cta, 'Button text');
+    ctaInp.addEventListener('input', () => { content.plans.items[i].cta = ctaInp.value; scheduleAutoSave(); });
+
+    // Features list
+    const featLabel = document.createElement('label'); featLabel.className = 'field-label'; featLabel.style.marginBottom='8px'; featLabel.textContent = 'Included features (one per line)';
+    const featTa = document.createElement('textarea'); featTa.className = 'field-textarea';
+    featTa.style.minHeight = '80px';
+    featTa.value = (p.features || []).join('\n');
+    featTa.addEventListener('input', () => {
+      content.plans.items[i].features = featTa.value.split('\n').map(s => s.trim()).filter(Boolean);
+      scheduleAutoSave();
+    });
+    const featRow = document.createElement('div'); featRow.className = 'field-row';
+    featRow.append(featLabel, featTa);
+
+    card.append(
+      makeRow('Cylinder size', sizeInp),
+      makeRow('Price', priceInp),
+      makeRow('Description', descTa),
+      makeRow('Button text', ctaInp),
+      featRow
+    );
+    wrap.appendChild(card);
+  });
+}
+
+// ── Coverage areas ────────────────────────────────────────────────────────────
+function renderAreasWrap() {
+  const wrap = document.getElementById('areas-wrap');
+  wrap.innerHTML = '';
+  (content.coverage.areas || []).forEach((a, i) => {
+    const row = document.createElement('div'); row.className = 'array-item';
+    const num = document.createElement('span'); num.className = 'array-item-num'; num.textContent = i + 1;
+    const inp = strField(a, 'Area name');
+    inp.addEventListener('input', () => { content.coverage.areas[i] = inp.value; scheduleAutoSave(); });
+    const del = delBtn();
+    del.addEventListener('click', () => { content.coverage.areas.splice(i, 1); renderAreasWrap(); scheduleAutoSave(); });
+    row.append(num, inp, del); wrap.appendChild(row);
+  });
+}
+document.getElementById('add-area').addEventListener('click', () => {
+  content.coverage.areas.push('New Area'); renderAreasWrap(); scheduleAutoSave();
+});
+
+// ── Testimonials ──────────────────────────────────────────────────────────────
+function renderTestiWrap() {
+  const wrap = document.getElementById('testi-wrap');
+  wrap.innerHTML = '';
+  (content.testimonials.items || []).forEach((t, i) => {
+    const row = document.createElement('div'); row.className = 'array-item';
+    const num = document.createElement('span'); num.className = 'array-item-num'; num.textContent = i + 1;
+    const fields = document.createElement('div'); fields.className = 'array-item-fields';
+
+    const qTa   = taField(t.quote, 'Customer quote');
+    qTa.style.minHeight = '80px';
+    qTa.addEventListener('input', () => { content.testimonials.items[i].quote = qTa.value; scheduleAutoSave(); });
+    const nInp  = strField(t.name, 'Full name');
+    nInp.addEventListener('input', () => { content.testimonials.items[i].name = nInp.value; scheduleAutoSave(); });
+    const rInp  = strField(t.role, 'Role / location');
+    rInp.addEventListener('input', () => { content.testimonials.items[i].role = rInp.value; scheduleAutoSave(); });
+    const iInp  = strField(t.initials, 'Initials (2 chars)');
+    iInp.style.width = '120px';
+    iInp.addEventListener('input', () => { content.testimonials.items[i].initials = iInp.value; scheduleAutoSave(); });
+
+    fields.append(qTa, nInp, rInp, iInp);
+    const del = delBtn();
+    del.addEventListener('click', () => { content.testimonials.items.splice(i, 1); renderTestiWrap(); scheduleAutoSave(); });
+    row.append(num, fields, del); wrap.appendChild(row);
+  });
+}
+document.getElementById('add-testi').addEventListener('click', () => {
+  content.testimonials.items.push({ quote:'', name:'', role:'', initials:'', color:'linear-gradient(135deg,#F97316,#EA580C)' });
+  renderTestiWrap(); scheduleAutoSave();
+});
+
+// ── App perks ─────────────────────────────────────────────────────────────────
+function renderPerksWrap() {
+  const wrap = document.getElementById('perks-wrap');
+  wrap.innerHTML = '';
+  (content.app.perks || []).forEach((p, i) => {
+    const row = document.createElement('div'); row.className = 'array-item';
+    const num = document.createElement('span'); num.className = 'array-item-num'; num.textContent = i + 1;
+    const inp = strField(p, 'Perk text');
+    inp.addEventListener('input', () => { content.app.perks[i] = inp.value; scheduleAutoSave(); });
+    const del = delBtn();
+    del.addEventListener('click', () => { content.app.perks.splice(i, 1); renderPerksWrap(); scheduleAutoSave(); });
+    row.append(num, inp, del); wrap.appendChild(row);
+  });
+}
+document.getElementById('add-perk').addEventListener('click', () => {
+  content.app.perks.push('New app feature'); renderPerksWrap(); scheduleAutoSave();
+});
+
+// ── FAQ ───────────────────────────────────────────────────────────────────────
+function renderFAQWrap() {
+  const wrap = document.getElementById('faq-wrap');
+  wrap.innerHTML = '';
+  (content.faq.items || []).forEach((item, i) => {
+    const row = document.createElement('div'); row.className = 'array-item';
+    const num = document.createElement('span'); num.className = 'array-item-num'; num.textContent = i + 1;
+    const fields = document.createElement('div'); fields.className = 'array-item-fields';
+    const qInp = strField(item.question, 'Question');
+    qInp.addEventListener('input', () => { content.faq.items[i].question = qInp.value; scheduleAutoSave(); });
+    const aTa  = taField(item.answer, 'Answer');
+    aTa.addEventListener('input', () => { content.faq.items[i].answer = aTa.value; scheduleAutoSave(); });
+    fields.append(qInp, aTa);
+    const del = delBtn();
+    del.addEventListener('click', () => { content.faq.items.splice(i, 1); renderFAQWrap(); scheduleAutoSave(); });
+    row.append(num, fields, del); wrap.appendChild(row);
+  });
+}
+document.getElementById('add-faq').addEventListener('click', () => {
+  content.faq.items.push({ question:'New question?', answer:'' });
+  renderFAQWrap(); scheduleAutoSave();
+});
+
+// ── Action buttons ─────────────────────────────────────────────────────────────
+document.getElementById('btn-save').addEventListener('click', () => {
+  saveNow(); showToast('Changes saved to browser!');
+});
+
+document.getElementById('btn-export').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(content, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'content.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('content.json downloaded!');
+});
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  if (!confirm('Reset all content to the original defaults? This cannot be undone.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  showToast('Reset to defaults — reloading…');
+  setTimeout(() => location.reload(), 1200);
+});
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+async function boot() {
+  content = await loadContent();
+  if (!content) { showToast('Could not load content.json — using defaults'); return; }
+
+  bindSimpleFields();
+  renderTrustWrap();
+  renderStats();
+  renderStepsWrap();
+  renderFeaturesWrap();
+  renderPlansWrap();
+  renderAreasWrap();
+  renderTestiWrap();
+  renderPerksWrap();
+  renderFAQWrap();
+
+  setIndicator('saved');
+}
+</script>
+</body>
+</html>
