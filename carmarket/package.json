@@ -1,0 +1,25 @@
+{
+  "name": "autong-server",
+  "version": "1.0.0",
+  "description": "AutoNG Used Car Marketplace",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "@supabase/supabase-js": "^2.39.0",
+    "axios": "^1.6.5",
+    "nodemailer": "^6.9.8",
+    "multer": "^1.4.5-lts.1",
+    "twilio": "^4.20.1",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3"
+  }
+}

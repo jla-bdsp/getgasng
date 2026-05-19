@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoNG Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="admin-body">
+
+<!-- ── Login Screen ──────────────────────────────────────────────────────── -->
+<div id="login-screen" class="admin-login">
+  <div class="login-card">
+    <h1>AutoNG <span style="color:var(--accent)">Admin</span></h1>
+    <p>Enter your password to continue</p>
+    <form id="login-form">
+      <div class="form-group">
+        <label for="admin-pass">Password</label>
+        <input type="password" id="admin-pass" placeholder="Admin password" required autofocus>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;padding:12px;font-size:14px;margin-top:4px">Sign In</button>
+      <div class="login-err" id="login-err">Incorrect password. Please try again.</div>
+    </form>
+  </div>
+</div>
+
+<!-- ── Admin Layout ───────────────────────────────────────────────────────── -->
+<div id="admin-app" class="admin-layout hidden">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="admin-brand">
+      <h1>AutoNG <span style="color:var(--accent)">Admin</span></h1>
+      <p id="admin-greeting">Dashboard</p>
+    </div>
+    <nav>
+      <div class="admin-nav-item active" data-section="pending">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 5v5l4 2"/></svg>
+        Pending Listings
+      </div>
+      <div class="admin-nav-item" data-section="live">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+        Live Listings
+      </div>
+      <div class="admin-nav-item" data-section="inspections">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        Inspections
+      </div>
+      <div class="admin-nav-item" data-section="auctions">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
+        Auctions
+      </div>
+      <div class="admin-nav-item" data-section="sold">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+        Sold Cars
+      </div>
+    </nav>
+    <div style="padding:20px;margin-top:auto;border-top:1px solid var(--border);margin-top:24px">
+      <button class="btn btn-ghost" id="logout-btn" style="width:100%;font-size:12px">
+        Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="admin-main">
+
+    <!-- ── Pending Listings ──────────────────────────────────────────────── -->
+    <section class="admin-section active" id="section-pending">
+      <div class="admin-section-title">Pending Listings</div>
+      <div class="admin-section-sub">Review and approve or reject submitted car listings.</div>
+      <div class="admin-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Photo</th>
+              <th>Title</th>
+              <th>Price</th>
+              <th>Location</th>
+              <th>Seller</th>
+              <th>Submitted</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="pending-tbody">
+            <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── Live Listings ─────────────────────────────────────────────────── -->
+    <section class="admin-section" id="section-live">
+      <div class="admin-section-title">Live Listings</div>
+      <div class="admin-section-sub">Mark cars as sold when they have been purchased.</div>
+      <div class="admin-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Photo</th>
+              <th>Title</th>
+              <th>Price</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th>Listed</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="live-tbody">
+            <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── Inspections ───────────────────────────────────────────────────── -->
+    <section class="admin-section" id="section-inspections">
+      <div class="admin-section-title">Inspection Requests</div>
+      <div class="admin-section-sub">All paid inspection and hold requests.</div>
+      <div class="admin-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Car</th>
+              <th>Buyer</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Payment</th>
+              <th>Hold</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="inspections-tbody">
+            <tr><td colspan="9" style="text-align:center;padding:40px;color:var(--muted)">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── Auctions ──────────────────────────────────────────────────────── -->
+    <section class="admin-section" id="section-auctions">
+      <div class="admin-section-title">Auction Management</div>
+      <div class="admin-section-sub">Create and manage car auctions shown on the main page.</div>
+
+      <div class="auction-list" id="auction-list">
+        <p style="color:var(--muted);font-size:13px">Loading…</p>
+      </div>
+
+      <div class="auction-form">
+        <h3 id="auction-form-title">Create New Auction</h3>
+        <input type="hidden" id="auction-edit-id">
+        <div class="form-group">
+          <label>Auction Title *</label>
+          <input type="text" id="auction-title" placeholder="e.g. July Premium Auction">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="auction-desc" rows="2" style="width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;font-size:14px;resize:vertical" placeholder="Brief description for buyers"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date &amp; Time *</label>
+            <input type="datetime-local" id="auction-date" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;font-size:14px;width:100%">
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="auction-status" class="filter-select" style="width:100%;min-width:auto">
+              <option value="upcoming">Upcoming</option>
+              <option value="live">Live</option>
+              <option value="ended">Ended</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:4px">
+          <button class="btn btn-primary" id="auction-save-btn" style="flex:1">Save Auction</button>
+          <button class="btn btn-ghost" id="auction-cancel-btn" style="display:none">Cancel</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Sold Cars ─────────────────────────────────────────────────────── -->
+    <section class="admin-section" id="section-sold">
+      <div class="admin-section-title">Sold Cars</div>
+      <div class="admin-section-sub">Archive of all sold vehicles.</div>
+      <div class="admin-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Photo</th>
+              <th>Title</th>
+              <th>Price</th>
+              <th>Location</th>
+              <th>Sold</th>
+            </tr>
+          </thead>
+          <tbody id="sold-tbody">
+            <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted)">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ── Confirm Modal ──────────────────────────────────────────────────────── -->
+<div class="modal-overlay hidden" id="confirm-overlay">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header">
+      <h2 id="confirm-title">Confirm Action</h2>
+      <button class="modal-close" id="confirm-close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p id="confirm-msg" style="color:var(--muted);font-size:14px;margin-bottom:20px"></p>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-ghost" id="confirm-cancel" style="flex:1">Cancel</button>
+        <button class="btn btn-danger" id="confirm-ok" style="flex:1">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Toast ──────────────────────────────────────────────────────────────── -->
+<div id="toast-container"></div>
+
+<script>
+/* ── State ──────────────────────────────────────────────────────────────── */
+let adminToken = sessionStorage.getItem('admin_token') || '';
+let confirmCallback = null;
+
+/* ── Init ────────────────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  if (adminToken) showApp();
+
+  document.getElementById('login-form').addEventListener('submit', handleLogin);
+
+  document.querySelectorAll('.admin-nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.admin-nav-item').forEach(i => i.classList.remove('active'));
+      document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+      item.classList.add('active');
+      document.getElementById('section-' + item.dataset.section).classList.add('active');
+      loadSection(item.dataset.section);
+    });
+  });
+
+  document.getElementById('logout-btn').addEventListener('click', () => {
+    adminToken = '';
+    sessionStorage.removeItem('admin_token');
+    document.getElementById('admin-app').classList.add('hidden');
+    document.getElementById('login-screen').classList.remove('hidden');
+  });
+
+  document.getElementById('confirm-close').addEventListener('click', closeConfirm);
+  document.getElementById('confirm-cancel').addEventListener('click', closeConfirm);
+  document.getElementById('confirm-ok').addEventListener('click', () => { if (confirmCallback) confirmCallback(); closeConfirm(); });
+  document.getElementById('confirm-overlay').addEventListener('click', e => { if (e.target.id === 'confirm-overlay') closeConfirm(); });
+
+  document.getElementById('auction-save-btn').addEventListener('click', saveAuction);
+  document.getElementById('auction-cancel-btn').addEventListener('click', cancelAuctionEdit);
+});
+
+/* ── Login ────────────────────────────────────────────────────────────────── */
+async function handleLogin(e) {
+  e.preventDefault();
+  const pass = document.getElementById('admin-pass').value;
+  const btn = e.target.querySelector('button[type="submit"]');
+  btn.disabled = true;
+  btn.textContent = 'Signing in…';
+
+  try {
+    const res = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pass })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Invalid password');
+    adminToken = data.token;
+    sessionStorage.setItem('admin_token', adminToken);
+    showApp();
+  } catch (err) {
+    document.getElementById('login-err').style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Sign In';
+  }
+}
+
+function showApp() {
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('admin-app').classList.remove('hidden');
+  loadSection('pending');
+}
+
+/* ── API helper ──────────────────────────────────────────────────────────── */
+async function api(path, options = {}) {
+  const res = await fetch('/api/admin' + path, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + adminToken,
+      ...(options.headers || {})
+    }
+  });
+  if (res.status === 401) {
+    adminToken = '';
+    sessionStorage.removeItem('admin_token');
+    location.reload();
+    return null;
+  }
+  return res.json();
+}
+
+/* ── Section loader ─────────────────────────────────────────────────────── */
+function loadSection(name) {
+  switch (name) {
+    case 'pending':     loadPending(); break;
+    case 'live':        loadLive(); break;
+    case 'inspections': loadInspections(); break;
+    case 'auctions':    loadAuctions(); break;
+    case 'sold':        loadSold(); break;
+  }
+}
+
+/* ── Format ──────────────────────────────────────────────────────────────── */
+function fmt(n) { return '₦' + Number(n).toLocaleString('en-NG'); }
+function fmtDate(d) { return d ? new Date(d).toLocaleDateString('en-NG', { day:'numeric', month:'short', year:'numeric' }) : '—'; }
+function thumb(images) {
+  const src = images?.[0] || 'https://images.unsplash.com/photo-1502161254066-6c74afbf07aa?w=200&q=60';
+  return `<img class="td-thumb" src="${src}" alt="">`;
+}
+
+/* ── Pending Listings ────────────────────────────────────────────────────── */
+async function loadPending() {
+  const tbody = document.getElementById('pending-tbody');
+  tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">Loading…</td></tr>`;
+  const data = await api('/cars?approved=false');
+  if (!data) return;
+  const cars = data.cars || [];
+  if (!cars.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">No pending listings.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = cars.map(car => `
+    <tr>
+      <td>${thumb(car.images)}</td>
+      <td style="font-weight:500;color:var(--white)">${escHtml(car.title)}</td>
+      <td>${fmt(car.price)}</td>
+      <td>${escHtml(car.location)}</td>
+      <td style="font-size:12px"><strong>${escHtml(car.seller_name||'—')}</strong><br><span style="color:var(--muted)">${escHtml(car.seller_email||'—')}</span></td>
+      <td style="color:var(--muted);font-size:12px">${fmtDate(car.created_at)}</td>
+      <td>
+        <div class="admin-actions">
+          <button class="btn btn-sm btn-primary" onclick="approveCar('${car.id}')">Approve</button>
+          <button class="btn btn-sm btn-danger" onclick="rejectCar('${car.id}','${escHtml(car.title)}')">Reject</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+async function approveCar(id) {
+  const data = await api('/cars/' + id + '/approve', { method: 'PATCH' });
+  if (data?.success) { toast('Listing approved and seller notified.', 'success'); loadPending(); }
+  else toast('Failed to approve listing.', 'error');
+}
+
+function rejectCar(id, title) {
+  openConfirm(
+    'Reject Listing',
+    `Permanently delete the listing "${title}"? This cannot be undone.`,
+    async () => {
+      const data = await api('/cars/' + id + '/reject', { method: 'PATCH' });
+      if (data?.success) { toast('Listing rejected and deleted.', 'success'); loadPending(); }
+      else toast('Failed to reject listing.', 'error');
+    }
+  );
+}
+
+/* ── Live Listings ───────────────────────────────────────────────────────── */
+async function loadLive() {
+  const tbody = document.getElementById('live-tbody');
+  tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">Loading…</td></tr>`;
+  const data = await api('/cars?approved=true&status=available');
+  const data2 = await api('/cars?approved=true&status=held');
+  if (!data || !data2) return;
+  const cars = [...(data.cars||[]), ...(data2.cars||[])];
+  if (!cars.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">No live listings.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = cars.map(car => {
+    const statusBadge = car.status === 'held'
+      ? `<span class="badge badge-pending">Held</span>`
+      : `<span class="badge badge-approved">Available</span>`;
+    return `
+    <tr>
+      <td>${thumb(car.images)}</td>
+      <td style="font-weight:500;color:var(--white)">${escHtml(car.title)}</td>
+      <td>${fmt(car.price)}</td>
+      <td>${escHtml(car.location)}</td>
+      <td>${statusBadge}</td>
+      <td style="color:var(--muted);font-size:12px">${fmtDate(car.approved_at||car.created_at)}</td>
+      <td>
+        <button class="btn btn-sm btn-danger" onclick="markSold('${car.id}','${escHtml(car.title)}')">Mark Sold</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function markSold(id, title) {
+  openConfirm(
+    'Mark as Sold',
+    `Mark "${title}" as sold? This will remove it from listings and notify all paid inspectors by email and WhatsApp.`,
+    async () => {
+      const data = await api('/cars/' + id + '/sold', { method: 'PATCH' });
+      if (data?.success) {
+        toast(`Car marked as sold. ${data.notified} inspector(s) notified.`, 'success');
+        loadLive();
+      } else toast('Failed to mark as sold.', 'error');
+    }
+  );
+}
+
+/* ── Inspections ─────────────────────────────────────────────────────────── */
+async function loadInspections() {
+  const tbody = document.getElementById('inspections-tbody');
+  tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--muted)">Loading…</td></tr>`;
+  const data = await api('/inspections');
+  if (!data) return;
+  const inspections = data.inspections || [];
+  if (!inspections.length) {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--muted)">No inspection requests yet.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = inspections.map(i => {
+    const carTitle = i.cars ? `${i.cars.year||''} ${i.cars.make||''} ${i.cars.model||''}`.trim() : '—';
+    const payBadge = i.payment_status === 'paid'
+      ? `<span class="badge badge-paid">Paid</span>`
+      : i.payment_status === 'failed'
+        ? `<span class="badge badge-rejected">Failed</span>`
+        : `<span class="badge badge-pending">Pending</span>`;
+    return `
+    <tr>
+      <td style="font-size:12px;color:var(--text)">${escHtml(carTitle)}</td>
+      <td style="font-weight:500">${escHtml(i.name)}</td>
+      <td style="font-size:12px;color:var(--muted)">${escHtml(i.email)}</td>
+      <td style="font-size:12px">${escHtml(i.phone)}</td>
+      <td style="font-size:12px">${i.request_type === 'inspect_hold' ? 'Inspect + Hold' : 'Inspect'}</td>
+      <td>${fmt(i.total_amount)}</td>
+      <td>${payBadge}</td>
+      <td style="text-align:center">${i.hold_granted ? '✅' : '—'}</td>
+      <td style="color:var(--muted);font-size:12px">${fmtDate(i.created_at)}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── Auctions ────────────────────────────────────────────────────────────── */
+async function loadAuctions() {
+  const list = document.getElementById('auction-list');
+  list.innerHTML = `<p style="color:var(--muted);font-size:13px">Loading…</p>`;
+  const data = await api('/auction');
+  if (!data) return;
+  const auctions = data.auctions || [];
+  if (!auctions.length) {
+    list.innerHTML = `<p style="color:var(--muted);font-size:13px">No auctions yet.</p>`;
+    return;
+  }
+  list.innerHTML = auctions.map(a => {
+    const statusColor = a.status === 'live' ? 'var(--green)' : a.status === 'ended' ? 'var(--muted)' : 'var(--yellow)';
+    return `
+    <div class="auction-item">
+      <div class="auction-item-info">
+        <h4>${escHtml(a.title)}</h4>
+        <p>${fmtDate(a.auction_date)} &nbsp;·&nbsp; <span style="color:${statusColor};font-weight:600;text-transform:capitalize">${a.status}</span></p>
+      </div>
+      <button class="btn btn-sm btn-outline" onclick="editAuction(${JSON.stringify(a).replace(/"/g,'&quot;')})">Edit</button>
+    </div>`;
+  }).join('');
+}
+
+function editAuction(auction) {
+  document.getElementById('auction-edit-id').value = auction.id;
+  document.getElementById('auction-title').value = auction.title;
+  document.getElementById('auction-desc').value = auction.description || '';
+  document.getElementById('auction-date').value = auction.auction_date?.slice(0, 16) || '';
+  document.getElementById('auction-status').value = auction.status;
+  document.getElementById('auction-form-title').textContent = 'Edit Auction';
+  document.getElementById('auction-cancel-btn').style.display = 'inline-flex';
+  document.getElementById('auction-form-title').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function cancelAuctionEdit() {
+  document.getElementById('auction-edit-id').value = '';
+  document.getElementById('auction-title').value = '';
+  document.getElementById('auction-desc').value = '';
+  document.getElementById('auction-date').value = '';
+  document.getElementById('auction-status').value = 'upcoming';
+  document.getElementById('auction-form-title').textContent = 'Create New Auction';
+  document.getElementById('auction-cancel-btn').style.display = 'none';
+}
+
+async function saveAuction() {
+  const id     = document.getElementById('auction-edit-id').value;
+  const title  = document.getElementById('auction-title').value.trim();
+  const desc   = document.getElementById('auction-desc').value.trim();
+  const date   = document.getElementById('auction-date').value;
+  const status = document.getElementById('auction-status').value;
+
+  if (!title || !date) { toast('Title and date are required.', 'error'); return; }
+
+  const btn = document.getElementById('auction-save-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  const data = await api('/auction', {
+    method: 'PUT',
+    body: JSON.stringify({ id: id || undefined, title, description: desc, auction_date: date, status })
+  });
+
+  btn.disabled = false;
+  btn.textContent = 'Save Auction';
+
+  if (data?.success) {
+    toast('Auction saved.', 'success');
+    cancelAuctionEdit();
+    loadAuctions();
+  } else {
+    toast(data?.error || 'Failed to save auction.', 'error');
+  }
+}
+
+/* ── Sold ────────────────────────────────────────────────────────────────── */
+async function loadSold() {
+  const tbody = document.getElementById('sold-tbody');
+  tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted)">Loading…</td></tr>`;
+  const data = await api('/cars?status=sold');
+  if (!data) return;
+  const cars = data.cars || [];
+  if (!cars.length) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted)">No sold cars yet.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = cars.map(car => `
+    <tr>
+      <td>${thumb(car.images)}</td>
+      <td style="font-weight:500;color:var(--white)">${escHtml(car.title)}</td>
+      <td>${fmt(car.price)}</td>
+      <td>${escHtml(car.location)}</td>
+      <td style="color:var(--muted);font-size:12px">${fmtDate(car.sold_at)}</td>
+    </tr>`).join('');
+}
+
+/* ── Confirm Modal ───────────────────────────────────────────────────────── */
+function openConfirm(title, msg, cb) {
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-msg').textContent   = msg;
+  confirmCallback = cb;
+  document.getElementById('confirm-overlay').classList.remove('hidden');
+}
+
+function closeConfirm() {
+  document.getElementById('confirm-overlay').classList.add('hidden');
+  confirmCallback = null;
+}
+
+/* ── Toast ───────────────────────────────────────────────────────────────── */
+function toast(msg, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 4200);
+}
+
+/* ── Security ────────────────────────────────────────────────────────────── */
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+</script>
+</body>
+</html>

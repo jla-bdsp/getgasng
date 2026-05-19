@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoNG — Premium Used Cars in Nigeria</title>
+  <meta name="description" content="Find quality used cars in Port Harcourt, Lagos and Abuja. Transparent pricing, professional inspection, secure transactions.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ── Navbar ────────────────────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-brand">
+    <div>
+      <div class="nav-logo">Auto<span>NG</span></div>
+      <div class="nav-tagline">Premium Used Cars</div>
+    </div>
+  </div>
+  <div class="nav-actions">
+    <button class="btn btn-outline" id="sell-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      Sell Your Car
+    </button>
+  </div>
+</nav>
+
+<!-- ── Auction Banner ────────────────────────────────────────────────────── -->
+<div id="auction-banner" class="hidden">
+  <div class="auction-label">
+    <span class="live-dot"></span>
+    Next Auction
+  </div>
+  <div class="auction-title" id="auction-title-text">Loading…</div>
+  <div class="countdown">
+    <div class="cd-unit"><span class="cd-num" id="cd-days">00</span><span class="cd-label">Days</span></div>
+    <span class="cd-sep">:</span>
+    <div class="cd-unit"><span class="cd-num" id="cd-hours">00</span><span class="cd-label">Hrs</span></div>
+    <span class="cd-sep">:</span>
+    <div class="cd-unit"><span class="cd-num" id="cd-mins">00</span><span class="cd-label">Min</span></div>
+    <span class="cd-sep">:</span>
+    <div class="cd-unit"><span class="cd-num" id="cd-secs">00</span><span class="cd-label">Sec</span></div>
+  </div>
+</div>
+
+<!-- ── Hero / Filters ────────────────────────────────────────────────────── -->
+<section class="hero">
+  <h1>Find Your Next <span>Car</span></h1>
+  <p>Verified listings · Professional inspections · Secure transactions</p>
+
+  <div class="filters">
+    <input type="text" class="search-box" id="search" placeholder="Search make, model, year…">
+
+    <select class="filter-select" id="filter-make">
+      <option value="">All Makes</option>
+      <option>Toyota</option>
+      <option>Mercedes-Benz</option>
+      <option>Honda</option>
+      <option>BMW</option>
+      <option>Ford</option>
+      <option>Lexus</option>
+      <option>Hyundai</option>
+      <option>Kia</option>
+      <option>Volkswagen</option>
+    </select>
+
+    <select class="filter-select" id="filter-location">
+      <option value="">All Locations</option>
+      <option>Port Harcourt</option>
+      <option>Lagos</option>
+      <option>Abuja</option>
+      <option>Enugu</option>
+      <option>Ibadan</option>
+    </select>
+
+    <select class="filter-select" id="filter-price">
+      <option value="">Any Price</option>
+      <option value="0-5000000">Under ₦5M</option>
+      <option value="5000000-10000000">₦5M – ₦10M</option>
+      <option value="10000000-20000000">₦10M – ₦20M</option>
+      <option value="20000000-99999999">Above ₦20M</option>
+    </select>
+  </div>
+</section>
+
+<!-- ── Cars Section ───────────────────────────────────────────────────────── -->
+<section id="cars-section">
+  <div class="section-meta">
+    <div class="cars-count" id="cars-count-text">Loading…</div>
+  </div>
+  <div id="cars-grid">
+    <div class="cars-loading"><div class="spinner"></div><p style="color:var(--muted)">Loading listings…</p></div>
+  </div>
+</section>
+
+<!-- ── Inspection Modal ──────────────────────────────────────────────────── -->
+<div class="modal-overlay hidden" id="inspect-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Request Inspection</h2>
+      <button class="modal-close" id="modal-close" aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="car-ref-row">
+        <strong id="modal-car-title">—</strong>
+        <span id="modal-car-price">—</span>
+      </div>
+
+      <form id="inspect-form" novalidate>
+        <input type="hidden" id="inspect-car-id">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="inp-name">Full Name *</label>
+            <input type="text" id="inp-name" placeholder="Your full name" required>
+          </div>
+          <div class="form-group">
+            <label for="inp-email">Email *</label>
+            <input type="email" id="inp-email" placeholder="you@email.com" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="inp-phone">Phone *</label>
+            <input type="tel" id="inp-phone" placeholder="080x xxx xxxx" required>
+          </div>
+          <div class="form-group">
+            <label for="inp-whatsapp">WhatsApp (optional)</label>
+            <input type="tel" id="inp-whatsapp" placeholder="080x xxx xxxx">
+          </div>
+        </div>
+
+        <!-- Hold toggle (or replaced with warning if car is already held) -->
+        <div id="hold-area">
+          <div class="hold-toggle" onclick="document.getElementById('hold-toggle-input').click();event.stopPropagation();">
+            <div class="hold-toggle-header">
+              <h4>Hold this car (₦20,000)</h4>
+              <label class="toggle-switch" onclick="event.stopPropagation()">
+                <input type="checkbox" id="hold-toggle-input">
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+            <p class="hold-desc">Prevent the car from being sold while you inspect. Only one hold allowed per car. Refundable if car has a major undisclosed fault.</p>
+          </div>
+        </div>
+
+        <!-- Fee summary -->
+        <div class="fee-summary">
+          <div class="fee-summary-row">
+            <span>Inspection fee</span>
+            <span id="summary-inspect-fee">₦2,500</span>
+          </div>
+          <div class="fee-summary-row">
+            <span>Hold fee</span>
+            <span id="summary-hold-fee">—</span>
+          </div>
+          <div class="fee-summary-row total">
+            <span>Total</span>
+            <span id="summary-total">₦2,500</span>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-pay-btn" id="pay-btn">
+          Pay ₦2,500 →
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ── Sell a Car Modal ───────────────────────────────────────────────────── -->
+<div class="modal-overlay hidden" id="sell-overlay">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header">
+      <h2>List Your Car</h2>
+      <button class="modal-close" id="sell-close" aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="step-indicators">
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+      </div>
+
+      <form id="sell-form" novalidate>
+
+        <!-- Step 1: Car details -->
+        <div class="step-panel active">
+          <h3>Car Details</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Make *</label>
+              <input type="text" id="sell-make" placeholder="e.g. Toyota" required>
+            </div>
+            <div class="form-group">
+              <label>Model *</label>
+              <input type="text" id="sell-model" placeholder="e.g. Camry" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Year *</label>
+              <input type="number" id="sell-year" placeholder="2019" min="1990" max="2026" required>
+            </div>
+            <div class="form-group">
+              <label>Price (₦) *</label>
+              <input type="number" id="sell-price" placeholder="12500000" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Listing Title *</label>
+            <input type="text" id="sell-title" placeholder="e.g. 2019 Toyota Camry XSE — Excellent" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Location *</label>
+              <select id="sell-location" required>
+                <option value="">Select city</option>
+                <option>Port Harcourt</option>
+                <option>Lagos</option>
+                <option>Abuja</option>
+                <option>Enugu</option>
+                <option>Ibadan</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Mileage (km)</label>
+              <input type="number" id="sell-mileage" placeholder="42000">
+            </div>
+          </div>
+          <div class="step-actions">
+            <span style="font-size:12px;color:var(--muted)">Step 1 of 3</span>
+            <button type="button" class="btn btn-primary sell-next-btn" data-step="2">Next →</button>
+          </div>
+        </div>
+
+        <!-- Step 2: More specs + photos -->
+        <div class="step-panel">
+          <h3>Specs &amp; Photos</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Condition</label>
+              <select id="sell-condition">
+                <option>Excellent</option>
+                <option>Good</option>
+                <option>Fair</option>
+                <option>Needs Work</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Transmission</label>
+              <select id="sell-transmission">
+                <option>Automatic</option>
+                <option>Manual</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Fuel Type</label>
+              <select id="sell-fuel">
+                <option>Petrol</option>
+                <option>Diesel</option>
+                <option>Hybrid</option>
+                <option>Electric</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Color</label>
+              <input type="text" id="sell-color" placeholder="e.g. Pearl White">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="sell-description" rows="3" placeholder="Key features, service history, any extras…" style="resize:vertical"></textarea>
+          </div>
+
+          <label style="font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px;">Photos (up to 10)</label>
+          <div class="image-upload-area" id="upload-area">
+            <input type="file" id="image-input" accept="image/*" multiple>
+            <div class="upload-icon">📷</div>
+            <p class="upload-text"><strong>Click to upload</strong> or drag &amp; drop</p>
+            <p class="upload-text" style="font-size:12px;margin-top:4px">JPG, PNG up to 10MB each</p>
+          </div>
+          <div class="image-previews" id="image-previews"></div>
+
+          <div class="step-actions">
+            <button type="button" class="btn btn-ghost sell-back-btn" data-step="1">← Back</button>
+            <button type="button" class="btn btn-primary sell-next-btn" data-step="3">Next →</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Seller contact -->
+        <div class="step-panel">
+          <h3>Your Contact Info</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Name *</label>
+              <input type="text" id="sell-seller-name" required>
+            </div>
+            <div class="form-group">
+              <label>Email *</label>
+              <input type="email" id="sell-seller-email" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Phone *</label>
+              <input type="tel" id="sell-seller-phone" required>
+            </div>
+            <div class="form-group">
+              <label>WhatsApp (optional)</label>
+              <input type="tel" id="sell-seller-wa">
+            </div>
+          </div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:18px;line-height:1.6">Your contact details are kept private. They will only be shared with buyers who have paid the inspection fee. Your listing goes live after admin review (usually within 24 hours).</p>
+          <div class="step-actions">
+            <button type="button" class="btn btn-ghost sell-back-btn" data-step="2">← Back</button>
+            <button type="submit" class="btn btn-primary" id="sell-submit-btn">Submit Listing</button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ── Footer ─────────────────────────────────────────────────────────────── -->
+<footer>
+  <p>&copy; 2025 AutoNG. All rights reserved. &nbsp;|&nbsp; <a href="mailto:info@autong.ng">info@autong.ng</a></p>
+</footer>
+
+<!-- ── Toast container ───────────────────────────────────────────────────── -->
+<div id="toast-container"></div>
+
+<!-- ── Scripts ───────────────────────────────────────────────────────────── -->
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
