@@ -12,10 +12,14 @@ const starSVG  = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fi
 
 // ── Content loading ───────────────────────────────────────────────────────────
 async function loadContent() {
+  // 1. Admin edits saved in localStorage take priority
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored) {
     try { return JSON.parse(stored); } catch (e) { /* fall through */ }
   }
+  // 2. Inlined by the standalone build script
+  if (window.__CONTENT__) return window.__CONTENT__;
+  // 3. Fetch from server (normal hosted mode)
   try {
     const res = await fetch('content.json');
     if (res.ok) return await res.json();
