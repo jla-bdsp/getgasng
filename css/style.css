@@ -2,14 +2,22 @@
    GetGasNG — Premium LPG Delivery, Port Harcourt
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
 
 /* ─── CSS Custom Properties ─────────────────── */
 :root {
-  --primary:       #F97316;
-  --primary-dark:  #EA580C;
-  --primary-light: #FFF7ED;
-  --primary-glow:  rgba(249,115,22,.15);
+  /* ── Brand palette (from logo) ── */
+  --brand-navy:    #1A3C72;   /* wordmark deep navy */
+  --brand-blue:    #2B7FBF;   /* pipe / S-curve blue */
+  --brand-sky:     #47A3D3;   /* .com / highlight blue */
+  --brand-orange:  #F47520;   /* flame body orange */
+  --brand-gold:    #FFB300;   /* flame tip gold */
+
+  /* ── Semantic tokens ── */
+  --primary:       #F47520;
+  --primary-dark:  #D96010;
+  --primary-light: #FFF3E8;
+  --primary-glow:  rgba(244,117,32,.15);
   --navy:          #0F172A;
   --navy-mid:      #1E293B;
   --slate:         #64748B;
@@ -24,9 +32,11 @@
   --shadow-sm:     0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
   --shadow-md:     0 4px 16px rgba(0,0,0,.08), 0 1px 4px rgba(0,0,0,.04);
   --shadow-lg:     0 20px 48px rgba(0,0,0,.10), 0 4px 12px rgba(0,0,0,.05);
-  --shadow-glow:   0 8px 40px rgba(249,115,22,.25);
+  --shadow-glow:   0 8px 40px rgba(244,117,32,.28);
+  /* hero gradient uses brand blue → orange */
+  --hero-gradient: linear-gradient(135deg, var(--brand-navy) 0%, #0F172A 100%);
   --transition:    .25s cubic-bezier(.4,0,.2,1);
-  --font:          'Poppins', sans-serif;
+  --font:          'Montserrat', sans-serif;
 }
 
 /* ─── Reset ──────────────────────────────────── */
@@ -163,6 +173,14 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   font-weight: 700;
   font-size: 1.25rem;
   color: var(--navy);
+}
+.nav__logo-img {
+  height: 44px;
+  width: auto;
+  display: block;
+  /* keep crisp at all DPRs */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 .nav__logo-icon {
   width: 36px;
@@ -1197,10 +1215,10 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .footer__brand { }
-.footer__brand .nav__logo { margin-bottom: 16px; }
-.footer__brand .nav__logo-icon { background: rgba(249,115,22,.15); }
+.footer__brand .nav__logo { margin-bottom: 16px; color: #fff; }
+.footer__brand .nav__logo-img { height: 40px; }
+.footer__brand .nav__logo-icon { background: rgba(244,117,32,.15); }
 .footer__brand .nav__logo-icon svg { color: var(--primary); }
-.footer__brand .nav__logo { color: #fff; }
 .footer__brand p {
   font-size: .88rem;
   line-height: 1.7;
