@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Drop Admin — founder control panel.">
+<title>Drop — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+:root {
+  --y: #FFD600;
+  --y-dim: #E6C000;
+  --b: #0A0A0A;
+  --w: #FAFAF5;
+  --g0: #F8F8F2;
+  --g1: #F0F0E8;
+  --g2: #D8D8D0;
+  --g5: #787870;
+  --green: #16A34A;
+  --green-bg: #F0FDF4;
+  --green-border: #BBF7D0;
+  --amber: #D97706;
+  --amber-bg: #FFFBEB;
+  --red: #DC2626;
+  --red-bg: #FEF2F2;
+  --shadow: 4px 4px 0 0 var(--b);
+  --t: 150ms ease-out;
+  --font-head: 'Montserrat', sans-serif;
+  --font-body: 'Poppins', sans-serif;
+  --r: 4px;
+  --r-lg: 10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;}
+body{
+  font-family:var(--font-body);
+  background:var(--g1);
+  color:var(--b);
+  line-height:1.5;
+  min-height:100dvh;
+  overflow-x:hidden;
+}
+button{font-family:var(--font-body);cursor:pointer;}
+a{color:inherit;text-decoration:none;}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
+
+/* ══════════════════════════════════════
+   AUTH SCREEN
+══════════════════════════════════════ */
+#screen-auth{
+  min-height:100dvh;
+  display:flex;flex-direction:column;
+}
+.auth-top{
+  background:var(--b);
+  padding:40px 24px 48px;
+  position:relative;overflow:hidden;
+}
+.auth-top::before{
+  content:'';
+  position:absolute;top:-50px;right:-50px;
+  width:180px;height:180px;
+  background:rgba(255,214,0,.07);
+  border-radius:50%;pointer-events:none;
+}
+.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;position:relative;z-index:1;}
+.auth-logo-mark{
+  width:36px;height:36px;background:var(--y);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+}
+.auth-logo-mark svg{width:22px;height:22px;}
+.auth-wordmark{
+  font-family:var(--font-head);font-size:1.375rem;
+  font-weight:900;color:var(--w);letter-spacing:-0.5px;
+}
+.auth-wordmark span{color:var(--y);}
+.auth-headline{
+  font-family:var(--font-head);font-size:2rem;font-weight:900;
+  color:var(--w);letter-spacing:-1px;line-height:1.05;
+  position:relative;z-index:1;margin-bottom:6px;
+}
+.auth-headline em{color:var(--y);font-style:normal;}
+.auth-sub{font-size:.875rem;font-weight:300;color:rgba(250,250,245,.4);position:relative;z-index:1;}
+.auth-form-wrap{
+  flex:1;background:var(--w);
+  padding:32px 24px;border-radius:20px 20px 0 0;
+  margin-top:-16px;position:relative;z-index:2;
+}
+.form-label{
+  display:block;font-size:.6875rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:1px;
+  color:var(--g5);margin-bottom:6px;
+}
+.form-input{
+  width:100%;height:52px;padding:0 16px;
+  background:var(--g1);border:2px solid var(--g2);
+  border-radius:var(--r);font-size:1rem;font-weight:400;
+  color:var(--b);outline:none;
+  transition:border-color var(--t),background var(--t);
+  font-family:var(--font-body);
+}
+.form-input:focus{border-color:var(--b);background:#fff;}
+.form-group{margin-bottom:20px;}
+.form-error{
+  font-size:.75rem;font-weight:500;color:var(--red);
+  margin-top:6px;display:none;
+}
+.form-group.has-error .form-input{border-color:var(--red);background:var(--red-bg);}
+.form-group.has-error .form-error{display:block;}
+
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;height:52px;border:none;border-radius:var(--r);
+  font-family:var(--font-head);font-size:.9375rem;font-weight:800;
+  transition:transform var(--t),box-shadow var(--t);
+  -webkit-tap-highlight-color:transparent;outline:none;cursor:pointer;
+}
+.btn:focus-visible{outline:3px solid var(--b);outline-offset:2px;}
+.btn-primary{background:var(--y);color:var(--b);box-shadow:var(--shadow);}
+.btn-primary:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 0 var(--b);}
+.btn-primary:active{transform:translate(2px,2px);box-shadow:2px 2px 0 0 var(--b);}
+.btn-primary:disabled{background:var(--g2);color:var(--g5);box-shadow:none;transform:none;cursor:not-allowed;}
+.btn .spinner{
+  width:18px;height:18px;
+  border:2.5px solid rgba(10,10,10,.2);border-top-color:var(--b);
+  border-radius:50%;animation:spin 600ms linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ══════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════ */
+#screen-dash{display:none;min-height:100dvh;flex-direction:column;}
+#screen-dash.active{display:flex;}
+
+/* Header */
+.dash-header{
+  background:var(--b);height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;position:sticky;top:0;z-index:100;
+  border-bottom:2px solid rgba(255,214,0,.2);
+}
+.dash-logo{display:flex;align-items:center;gap:10px;}
+.dash-logo-mark{
+  width:30px;height:30px;background:var(--y);
+  border-radius:6px;display:flex;align-items:center;justify-content:center;
+}
+.dash-logo-mark svg{width:18px;height:18px;}
+.dash-title{
+  font-family:var(--font-head);font-size:.9375rem;
+  font-weight:900;color:var(--w);letter-spacing:-.3px;
+}
+.dash-title span{color:var(--y);}
+.btn-logout{
+  border:none;background:transparent;
+  color:rgba(250,250,245,.4);font-size:.75rem;
+  font-weight:500;padding:6px 8px;border-radius:var(--r);
+  transition:color var(--t),background var(--t);
+  font-family:var(--font-body);-webkit-tap-highlight-color:transparent;
+}
+.btn-logout:hover{color:var(--w);background:rgba(255,255,255,.06);}
+
+/* Tabs */
+.tabs{
+  background:var(--b);
+  display:flex;gap:0;
+  border-bottom:2px solid rgba(255,214,0,.15);
+  overflow-x:auto;scrollbar-width:none;
+}
+.tabs::-webkit-scrollbar{display:none;}
+.tab-btn{
+  flex-shrink:0;padding:12px 20px;
+  border:none;background:transparent;
+  font-family:var(--font-head);font-size:.75rem;
+  font-weight:800;text-transform:uppercase;letter-spacing:1px;
+  color:rgba(250,250,245,.35);cursor:pointer;
+  border-bottom:2px solid transparent;margin-bottom:-2px;
+  transition:color var(--t),border-color var(--t);
+  -webkit-tap-highlight-color:transparent;
+  white-space:nowrap;
+}
+.tab-btn.active{color:var(--y);border-bottom-color:var(--y);}
+.tab-btn:hover:not(.active){color:rgba(250,250,245,.65);}
+
+/* Main body */
+.dash-body{flex:1;padding:20px;}
+
+/* Refresh row */
+.refresh-row{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;
+}
+.refresh-info{font-size:.6875rem;font-weight:500;color:var(--g5);}
+.btn-refresh{
+  border:1.5px solid var(--g2);background:transparent;
+  color:var(--b);font-size:.75rem;font-weight:600;
+  border-radius:var(--r);padding:6px 12px;
+  display:flex;align-items:center;gap:6px;cursor:pointer;
+  transition:border-color var(--t),background var(--t);
+  font-family:var(--font-body);-webkit-tap-highlight-color:transparent;
+}
+.btn-refresh:hover{border-color:var(--b);background:var(--g1);}
+.btn-refresh svg{width:14px;height:14px;}
+.btn-refresh.spinning svg{animation:spin 800ms linear infinite;}
+
+/* ── KPI TILES ── */
+.kpi-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;margin-bottom:24px;
+}
+@media(min-width:640px){.kpi-grid{grid-template-columns:repeat(4,1fr);}}
+.kpi-card{
+  background:var(--w);
+  border:2px solid var(--b);
+  border-radius:var(--r-lg);
+  padding:16px;
+  box-shadow:var(--shadow);
+  position:relative;overflow:hidden;
+}
+.kpi-card::before{
+  content:'';
+  position:absolute;bottom:0;left:0;right:0;
+  height:3px;background:var(--y);
+}
+.kpi-label{
+  font-size:.625rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:1.2px;
+  color:var(--g5);margin-bottom:8px;
+}
+.kpi-value{
+  font-family:var(--font-head);font-size:1.875rem;
+  font-weight:900;color:var(--b);
+  letter-spacing:-1.5px;line-height:1;margin-bottom:6px;
+}
+.kpi-sub{font-size:.6875rem;font-weight:300;color:var(--g5);}
+.kpi-trend{
+  display:inline-flex;align-items:center;gap:3px;
+  font-size:.625rem;font-weight:600;
+  margin-top:4px;
+}
+.kpi-trend.up{color:var(--green);}
+.kpi-trend.neutral{color:var(--g5);}
+.kpi-trend svg{width:10px;height:10px;}
+
+/* Sparkline (CSS bars) */
+.sparkline{
+  display:flex;align-items:flex-end;gap:2px;
+  height:24px;margin-top:8px;
+}
+.spark-bar{
+  flex:1;background:var(--y);border-radius:2px 2px 0 0;
+  opacity:.7;min-height:3px;
+  transition:opacity var(--t);
+}
+.spark-bar:last-child{opacity:1;}
+
+/* ── TRIP CARDS (mobile-friendly) ── */
+.trip-row{
+  background:var(--w);
+  border:2px solid var(--b);
+  border-radius:var(--r-lg);
+  box-shadow:3px 3px 0 0 var(--b);
+  margin-bottom:12px;
+  overflow:hidden;
+}
+.trip-row-top{
+  padding:14px 16px;
+  display:flex;align-items:flex-start;gap:12px;
+}
+.trip-svc-dot{
+  width:10px;height:10px;border-radius:50%;
+  flex-shrink:0;margin-top:5px;
+}
+.trip-svc-dot.school{background:#3B82F6;}
+.trip-svc-dot.market{background:#8B5CF6;}
+.trip-svc-dot.gas{background:var(--y);}
+.trip-row-meta{flex:1;min-width:0;}
+.trip-row-name{
+  font-family:var(--font-head);font-size:.9375rem;
+  font-weight:800;color:var(--b);margin-bottom:2px;
+}
+.trip-row-detail{
+  font-size:.75rem;font-weight:300;color:var(--g5);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.trip-row-right{text-align:right;flex-shrink:0;}
+.trip-row-fare{
+  font-family:var(--font-head);font-size:1rem;
+  font-weight:900;color:var(--b);margin-bottom:4px;
+}
+.status-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  border-radius:99px;padding:3px 10px;
+  font-size:.625rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.8px;
+  white-space:nowrap;
+}
+.status-badge.pending{background:var(--amber-bg);color:var(--amber);border:1px solid #FDE68A;}
+.status-badge.paid{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+.status-badge.done{background:var(--g1);color:var(--g5);border:1px solid var(--g2);}
+.status-badge.cancelled{background:var(--red-bg);color:var(--red);border:1px solid #FECACA;}
+
+.trip-row-expand{
+  border-top:1.5px solid var(--g1);
+  padding:12px 16px;
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+}
+.trip-row-field{}
+.trip-row-field-label{
+  font-size:.5625rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:1px;color:var(--g5);margin-bottom:2px;
+}
+.trip-row-field-value{
+  font-size:.8125rem;font-weight:500;color:var(--b);word-break:break-word;
+}
+.trip-row-field.full{grid-column:1/-1;}
+.trip-row-actions{
+  border-top:1.5px solid var(--g1);
+  padding:10px 16px;display:flex;gap:8px;
+}
+.trip-action-btn{
+  flex:1;height:36px;border-radius:var(--r);border:none;
+  font-family:var(--font-head);font-size:.6875rem;font-weight:800;
+  cursor:pointer;
+  transition:transform var(--t),opacity var(--t);
+  -webkit-tap-highlight-color:transparent;
+}
+.trip-action-btn:active{transform:scale(.97);}
+.trip-action-btn.cancel{background:var(--red-bg);color:var(--red);}
+.trip-action-btn.done{background:var(--green-bg);color:var(--green);}
+.trip-action-btn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+
+/* Filter bar */
+.filter-bar{
+  display:flex;gap:8px;margin-bottom:16px;
+  overflow-x:auto;scrollbar-width:none;padding-bottom:2px;
+}
+.filter-bar::-webkit-scrollbar{display:none;}
+.filter-chip{
+  flex-shrink:0;padding:6px 14px;height:32px;
+  border-radius:99px;border:1.5px solid var(--g2);
+  background:var(--w);font-size:.75rem;font-weight:600;
+  cursor:pointer;white-space:nowrap;
+  transition:all var(--t);font-family:var(--font-body);
+  display:flex;align-items:center;
+  -webkit-tap-highlight-color:transparent;
+}
+.filter-chip.active{background:var(--b);border-color:var(--b);color:var(--w);}
+.filter-chip:hover:not(.active){border-color:var(--b);}
+
+/* ── RIDER MANAGEMENT ── */
+.rider-card-admin{
+  background:var(--w);
+  border:2px solid var(--b);
+  border-radius:var(--r-lg);
+  box-shadow:var(--shadow);
+  padding:16px;
+  margin-bottom:12px;
+  display:flex;align-items:center;gap:14px;
+}
+.rider-avatar-admin{
+  width:48px;height:48px;
+  background:var(--b);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  font-family:var(--font-head);font-size:1.125rem;font-weight:900;color:var(--y);
+}
+.rider-meta-admin{flex:1;min-width:0;}
+.rider-name-admin{
+  font-family:var(--font-head);font-size:.9375rem;
+  font-weight:800;color:var(--b);margin-bottom:2px;
+}
+.rider-details-admin{font-size:.75rem;font-weight:300;color:var(--g5);}
+.rider-actions-admin{display:flex;flex-direction:column;gap:6px;flex-shrink:0;}
+
+.toggle-btn{
+  height:32px;padding:0 14px;border-radius:99px;border:none;
+  font-family:var(--font-head);font-size:.6875rem;font-weight:800;
+  cursor:pointer;white-space:nowrap;
+  transition:all var(--t);-webkit-tap-highlight-color:transparent;
+}
+.toggle-btn.standby{background:var(--green-bg);color:var(--green);}
+.toggle-btn.offline{background:var(--g1);color:var(--g5);}
+.toggle-btn:hover{opacity:.8;}
+
+.remove-btn{
+  height:32px;padding:0 14px;border-radius:99px;
+  border:1.5px solid var(--red-bg);background:transparent;color:var(--red);
+  font-family:var(--font-head);font-size:.6875rem;font-weight:800;
+  cursor:pointer;transition:all var(--t);-webkit-tap-highlight-color:transparent;
+}
+.remove-btn:hover{background:var(--red-bg);}
+
+/* Add rider form */
+.add-rider-form{
+  background:var(--w);
+  border:2px solid var(--b);
+  border-radius:var(--r-lg);
+  box-shadow:var(--shadow);
+  padding:20px;
+  margin-bottom:20px;
+}
+.add-rider-title{
+  font-family:var(--font-head);font-size:1rem;font-weight:800;
+  margin-bottom:16px;letter-spacing:-.3px;
+}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-input-sm{
+  width:100%;height:44px;padding:0 12px;
+  background:var(--g1);border:2px solid var(--g2);
+  border-radius:var(--r);font-size:.875rem;
+  color:var(--b);outline:none;
+  transition:border-color var(--t),background var(--t);
+  font-family:var(--font-body);
+}
+.form-input-sm:focus{border-color:var(--b);background:#fff;}
+.form-label-sm{
+  display:block;font-size:.5625rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:1px;
+  color:var(--g5);margin-bottom:5px;
+}
+.btn-add{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  height:44px;border:none;border-radius:var(--r);
+  background:var(--y);color:var(--b);
+  font-family:var(--font-head);font-size:.875rem;font-weight:800;
+  cursor:pointer;
+  box-shadow:3px 3px 0 0 var(--b);
+  transition:transform var(--t),box-shadow var(--t);
+  -webkit-tap-highlight-color:transparent;
+  margin-top:14px;
+  width:100%;
+}
+.btn-add:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 0 var(--b);}
+.btn-add:active{transform:translate(2px,2px);box-shadow:1px 1px 0 0 var(--b);}
+.btn-add:disabled{background:var(--g2);color:var(--g5);box-shadow:none;transform:none;cursor:not-allowed;}
+
+/* Empty state */
+.empty-state{text-align:center;padding:48px 24px;}
+.empty-title{
+  font-family:var(--font-head);font-size:1.125rem;
+  font-weight:900;color:var(--b);margin-bottom:6px;
+}
+.empty-desc{font-size:.8125rem;font-weight:300;color:var(--g5);line-height:1.6;}
+
+/* Skeleton */
+.skeleton{
+  background:linear-gradient(90deg,var(--g1) 25%,var(--g2) 50%,var(--g1) 75%);
+  background-size:200% 100%;
+  border-radius:4px;
+  animation:shimmer 1.4s ease-in-out infinite;
+}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:24px;left:50%;
+  transform:translateX(-50%) translateY(120%);
+  z-index:9999;background:var(--b);color:var(--w);
+  padding:12px 20px;border-radius:99px;
+  font-size:.875rem;font-weight:500;
+  max-width:calc(100vw - 40px);text-align:center;
+  transition:transform 280ms cubic-bezier(.32,.72,0,1);
+  border-left:3px solid var(--y);
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.success{border-left-color:var(--green);}
+.toast.error{border-left-color:var(--red);}
+
+/* Confirm modal */
+.modal-overlay{
+  position:fixed;inset:0;z-index:200;
+  display:none;align-items:flex-end;
+}
+.modal-overlay.show{display:flex;}
+.modal-backdrop{
+  position:absolute;inset:0;
+  background:rgba(10,10,10,.7);
+  animation:bdin 200ms ease-out;
+}
+@keyframes bdin{from{opacity:0}to{opacity:1}}
+.modal-sheet{
+  position:relative;z-index:1;background:var(--w);
+  width:100%;border-radius:16px 16px 0 0;
+  animation:slideUp 280ms cubic-bezier(.32,.72,0,1);padding:20px;
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:40px;height:4px;background:var(--g2);border-radius:99px;margin:0 auto 20px;}
+.confirm-title{font-family:var(--font-head);font-size:1.125rem;font-weight:900;letter-spacing:-.5px;margin-bottom:6px;}
+.confirm-sub{font-size:.8125rem;font-weight:300;color:var(--g5);margin-bottom:24px;line-height:1.5;}
+.confirm-actions{display:flex;flex-direction:column;gap:10px;}
+.btn-confirm-yes{
+  display:flex;align-items:center;justify-content:center;
+  height:52px;border:none;border-radius:var(--r);
+  background:var(--red);color:#fff;
+  font-family:var(--font-head);font-size:.9375rem;font-weight:800;cursor:pointer;
+  transition:opacity var(--t);-webkit-tap-highlight-color:transparent;
+}
+.btn-confirm-yes:hover{opacity:.88;}
+.btn-confirm-no{
+  height:44px;border:2px solid var(--g2);border-radius:var(--r);
+  background:transparent;color:var(--g5);
+  font-family:var(--font-head);font-size:.875rem;font-weight:700;cursor:pointer;
+  transition:border-color var(--t),color var(--t);
+}
+.btn-confirm-no:hover{border-color:var(--b);color:var(--b);}
+
+.vstamp{
+  position:fixed;bottom:6px;right:8px;
+  font-size:.6rem;font-weight:500;
+  color:rgba(0,0,0,.15);pointer-events:none;
+  z-index:9998;font-family:monospace;
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     AUTH SCREEN
+══════════════════════════════════════ -->
+<div id="screen-auth">
+  <div class="auth-top">
+    <div class="auth-logo">
+      <div class="auth-logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M10 2C10 2 4 8 4 12.5C4 15.8 6.7 18.5 10 18.5C13.3 18.5 16 15.8 16 12.5C16 8 10 2 10 2Z" fill="#0A0A0A"/></svg>
+      </div>
+      <span class="auth-wordmark">Drop<span>.</span></span>
+    </div>
+    <h1 class="auth-headline">Admin<br><em>Panel.</em></h1>
+    <p class="auth-sub">Founder access only</p>
+  </div>
+  <div class="auth-form-wrap">
+    <form id="auth-form" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="admin-pin">Admin PIN</label>
+        <input id="admin-pin" class="form-input" type="password" placeholder="Enter PIN"
+               autocomplete="current-password" required inputmode="numeric" maxlength="8">
+        <p class="form-error" role="alert">Incorrect PIN</p>
+      </div>
+      <button type="submit" class="btn btn-primary" id="auth-btn">
+        <span class="btn-text">Enter Dashboard</span>
+      </button>
+    </form>
+    <div style="margin-top:24px;text-align:center;">
+      <a href="/" style="font-size:.8125rem;font-weight:500;color:var(--g5)">← Back to main site</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     DASHBOARD SCREEN
+══════════════════════════════════════ -->
+<div id="screen-dash">
+
+  <header class="dash-header" role="banner">
+    <div class="dash-logo">
+      <div class="dash-logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M10 2C10 2 4 8 4 12.5C4 15.8 6.7 18.5 10 18.5C13.3 18.5 16 15.8 16 12.5C16 8 10 2 10 2Z" fill="#0A0A0A"/></svg>
+      </div>
+      <div class="dash-title">Drop <span>Admin</span></div>
+    </div>
+    <button class="btn-logout" onclick="adminLogout()" aria-label="Log out">Log out</button>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Dashboard sections">
+    <button class="tab-btn active" role="tab" aria-selected="true"  aria-controls="tab-overview"  id="t-overview"  onclick="switchTab('overview')">Overview</button>
+    <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="tab-trips"     id="t-trips"     onclick="switchTab('trips')">Trips</button>
+    <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="tab-riders"    id="t-riders"    onclick="switchTab('riders')">Riders</button>
+  </nav>
+
+  <main class="dash-body" role="main">
+
+    <!-- ── OVERVIEW TAB ── -->
+    <section id="tab-overview" role="tabpanel" aria-labelledby="t-overview">
+      <div class="refresh-row">
+        <span class="refresh-info" id="ov-updated">Loading…</span>
+        <button class="btn-refresh" id="ov-refresh-btn" onclick="loadOverview()" aria-label="Refresh overview">
+          <svg id="ov-refresh-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 8A7 7 0 1014 5M14 1v4h-4"/></svg>
+          Refresh
+        </button>
+      </div>
+
+      <!-- KPI tiles -->
+      <div class="kpi-grid" id="kpi-grid">
+        <!-- skeleton -->
+        <div class="kpi-card"><div class="kpi-label">Total trips</div><div class="skeleton" style="height:32px;width:60%;margin:8px 0 6px;border-radius:4px;"></div><div class="skeleton short" style="height:12px;width:40%;border-radius:4px;"></div></div>
+        <div class="kpi-card"><div class="kpi-label">Revenue</div><div class="skeleton" style="height:32px;width:70%;margin:8px 0 6px;border-radius:4px;"></div><div class="skeleton short" style="height:12px;width:45%;border-radius:4px;"></div></div>
+        <div class="kpi-card"><div class="kpi-label">Active riders</div><div class="skeleton" style="height:32px;width:40%;margin:8px 0 6px;border-radius:4px;"></div><div class="skeleton short" style="height:12px;width:35%;border-radius:4px;"></div></div>
+        <div class="kpi-card"><div class="kpi-label">Pending</div><div class="skeleton" style="height:32px;width:40%;margin:8px 0 6px;border-radius:4px;"></div><div class="skeleton short" style="height:12px;width:35%;border-radius:4px;"></div></div>
+      </div>
+
+      <!-- Recent trips shortlist -->
+      <p class="kpi-label" style="margin-bottom:12px;margin-top:4px;">Recent bookings</p>
+      <div id="recent-trips"></div>
+    </section>
+
+    <!-- ── TRIPS TAB ── -->
+    <section id="tab-trips" role="tabpanel" aria-labelledby="t-trips" style="display:none">
+      <div class="refresh-row">
+        <span class="refresh-info" id="trips-updated">Loading…</span>
+        <button class="btn-refresh" id="trips-refresh-btn" onclick="loadAllTrips()" aria-label="Refresh trips">
+          <svg id="trips-refresh-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 8A7 7 0 1014 5M14 1v4h-4"/></svg>
+          Refresh
+        </button>
+      </div>
+      <div class="filter-bar" role="group" aria-label="Filter trips by status">
+        <button class="filter-chip active" onclick="setFilter('all',this)">All</button>
+        <button class="filter-chip" onclick="setFilter('pending',this)">Pending</button>
+        <button class="filter-chip" onclick="setFilter('paid',this)">Paid</button>
+        <button class="filter-chip" onclick="setFilter('done',this)">Done</button>
+        <button class="filter-chip" onclick="setFilter('school',this)">School</button>
+        <button class="filter-chip" onclick="setFilter('market',this)">Market</button>
+        <button class="filter-chip" onclick="setFilter('gas',this)">Gas</button>
+      </div>
+      <div id="trips-list"></div>
+    </section>
+
+    <!-- ── RIDERS TAB ── -->
+    <section id="tab-riders" role="tabpanel" aria-labelledby="t-riders" style="display:none">
+      <!-- Add rider form -->
+      <div class="add-rider-form">
+        <div class="add-rider-title">Add new rider</div>
+        <form id="add-rider-form" novalidate>
+          <div class="form-row">
+            <div>
+              <label class="form-label-sm" for="r-name">Full name *</label>
+              <input id="r-name" class="form-input-sm" type="text" placeholder="e.g. Chidi Okeke" required>
+            </div>
+            <div>
+              <label class="form-label-sm" for="r-phone">Phone *</label>
+              <input id="r-phone" class="form-input-sm" type="tel" placeholder="080XXXXXXXXX" required inputmode="tel">
+            </div>
+          </div>
+          <div class="form-row" style="margin-top:10px">
+            <div>
+              <label class="form-label-sm" for="r-whatsapp">WhatsApp</label>
+              <input id="r-whatsapp" class="form-input-sm" type="tel" placeholder="Same as phone" inputmode="tel">
+            </div>
+            <div>
+              <label class="form-label-sm" for="r-keke">Keke ID / Plate</label>
+              <input id="r-keke" class="form-input-sm" type="text" placeholder="e.g. PH-001">
+            </div>
+          </div>
+          <button type="submit" class="btn-add" id="add-rider-btn">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M8 2v12M2 8h12"/></svg>
+            <span>Add Rider</span>
+          </button>
+        </form>
+      </div>
+      <p class="kpi-label" style="margin-bottom:12px;">Registered riders</p>
+      <div id="riders-list"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div id="m-confirm" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="conf-title">
+  <div class="modal-backdrop" onclick="closeConfirm()"></div>
+  <div class="modal-sheet">
+    <div class="modal-handle" aria-hidden="true"></div>
+    <h2 class="confirm-title" id="conf-title">Are you sure?</h2>
+    <p class="confirm-sub" id="conf-sub">This action cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="btn-confirm-yes" id="conf-yes" onclick="execConfirm()">Confirm</button>
+      <button class="btn-confirm-no" onclick="closeConfirm()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<!-- VERSION STAMP -->
+<div class="vstamp">v2-0001</div>
+
+<script>
+// ══════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════
+const SUPABASE_URL  = 'https://YOUR_PROJECT.supabase.co';
+const SUPABASE_ANON = 'YOUR_ANON_KEY';
+const ADMIN_PIN     = 'YOUR_ADMIN_PIN'; // replace before launch
+const supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// ── STATE ──
+let _currentTab    = 'overview';
+let _allTrips      = [];
+let _tripFilter    = 'all';
+let _confirmAction = null;
+let _pollTimer     = null;
+
+// ══════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════
+let _toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ' ' + type : '');
+  t.getBoundingClientRect();
+  t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+function fmtNGN(n) { return '₦' + Number(n || 0).toLocaleString('en-NG'); }
+function fmtTime(iso) {
+  if (!iso) return '—';
+  try {
+    return new Date(iso).toLocaleString('en-NG', {
+      day:'numeric', month:'short', hour:'2-digit', minute:'2-digit', hour12:true
+    });
+  } catch { return iso; }
+}
+
+// ══════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════
+document.getElementById('auth-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const pin = document.getElementById('admin-pin').value;
+  const grp = document.getElementById('admin-pin').closest('.form-group');
+  if (pin === ADMIN_PIN) {
+    grp.classList.remove('has-error');
+    localStorage.setItem('drop_admin', '1');
+    enterDash();
+  } else {
+    grp.classList.add('has-error');
+  }
+});
+
+function enterDash() {
+  document.getElementById('screen-auth').style.display = 'none';
+  const dash = document.getElementById('screen-dash');
+  dash.classList.add('active');
+  loadOverview();
+  if (_pollTimer) clearInterval(_pollTimer);
+  _pollTimer = setInterval(() => {
+    if (_currentTab === 'overview') loadOverview();
+    else if (_currentTab === 'trips') loadAllTrips();
+  }, 60000);
+}
+
+function adminLogout() {
+  localStorage.removeItem('drop_admin');
+  if (_pollTimer) clearInterval(_pollTimer);
+  document.getElementById('screen-dash').classList.remove('active');
+  document.getElementById('screen-auth').style.display = '';
+  document.getElementById('admin-pin').value = '';
+}
+
+// Auto-login
+(function() {
+  if (localStorage.getItem('drop_admin') === '1') enterDash();
+})();
+
+// ══════════════════════════════════════════════
+// TAB SWITCHING
+// ══════════════════════════════════════════════
+function switchTab(tab) {
+  _currentTab = tab;
+  ['overview','trips','riders'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = t === tab ? '' : 'none';
+    const btn = document.getElementById('t-' + t);
+    btn.classList.toggle('active', t === tab);
+    btn.setAttribute('aria-selected', t === tab);
+  });
+  if (tab === 'overview') loadOverview();
+  else if (tab === 'trips') loadAllTrips();
+  else if (tab === 'riders') loadRiders();
+}
+
+// ══════════════════════════════════════════════
+// OVERVIEW
+// ══════════════════════════════════════════════
+async function loadOverview() {
+  const refreshBtn  = document.getElementById('ov-refresh-btn');
+  const refreshIcon = document.getElementById('ov-refresh-icon');
+  refreshBtn.classList.add('spinning');
+  document.getElementById('ov-updated').textContent = 'Refreshing…';
+
+  try {
+    const [tripsRes, ridersRes] = await Promise.all([
+      supa.from('requests').select('*').order('created_at', { ascending: false }),
+      supa.from('standby_riders').select('*')
+    ]);
+
+    const trips  = tripsRes.data  || [];
+    const riders = ridersRes.data || [];
+
+    // Compute KPIs
+    const total   = trips.length;
+    const revenue = trips.filter(t => ['paid','done'].includes(t.status)).reduce((s, t) => s + (t.fare || 0), 0);
+    const pending = trips.filter(t => t.status === 'pending').length;
+    const active  = riders.filter(r => r.status === 'standby').length;
+
+    // Weekly spark data (last 7 days)
+    const sparks = getWeeklySparkData(trips);
+
+    renderKPIs({ total, revenue, pending, active, sparks });
+    renderRecentTrips(trips.slice(0, 5));
+    document.getElementById('ov-updated').textContent =
+      'Updated ' + new Date().toLocaleTimeString('en-NG', { hour:'2-digit', minute:'2-digit', hour12:true });
+  } catch (err) {
+    console.error(err);
+    showToast('Could not load overview', 'error');
+    document.getElementById('ov-updated').textContent = 'Failed';
+  } finally {
+    refreshBtn.classList.remove('spinning');
+  }
+}
+
+function getWeeklySparkData(trips) {
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (6 - i));
+    return d.toDateString();
+  });
+  return days.map(d => trips.filter(t => t.created_at && new Date(t.created_at).toDateString() === d).length);
+}
+
+function renderKPIs({ total, revenue, pending, active, sparks }) {
+  const maxSpark = Math.max(...sparks, 1);
+  const sparkBars = sparks.map((v, i) =>
+    `<div class="spark-bar" style="height:${Math.max(4, Math.round((v / maxSpark) * 24))}px" aria-hidden="true"></div>`
+  ).join('');
+
+  document.getElementById('kpi-grid').innerHTML = `
+    <div class="kpi-card">
+      <div class="kpi-label">Total trips</div>
+      <div class="kpi-value">${total}</div>
+      <div class="kpi-sub">All time</div>
+      <div class="sparkline" role="img" aria-label="7-day trip volume chart">${sparkBars}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Revenue</div>
+      <div class="kpi-value" style="font-size:1.5rem">${fmtNGN(revenue)}</div>
+      <div class="kpi-sub">Paid + completed</div>
+      <div class="kpi-trend up" aria-label="Revenue trend">
+        <svg viewBox="0 0 10 10" fill="currentColor"><path d="M1 8l4-5 4 5"/></svg>
+        All time
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Active riders</div>
+      <div class="kpi-value">${active}</div>
+      <div class="kpi-sub">On standby now</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Pending</div>
+      <div class="kpi-value" style="color:${pending > 0 ? 'var(--amber)' : 'var(--b)'}">${pending}</div>
+      <div class="kpi-sub">Unassigned requests</div>
+    </div>`;
+}
+
+function renderRecentTrips(trips) {
+  const el = document.getElementById('recent-trips');
+  if (!trips.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-title">No bookings yet</div><div class="empty-desc">Trips will appear here when customers book.</div></div>`;
+    return;
+  }
+  el.innerHTML = trips.map(t => buildTripRowHTML(t, false)).join('');
+}
+
+// ══════════════════════════════════════════════
+// TRIPS TAB
+// ══════════════════════════════════════════════
+async function loadAllTrips() {
+  const refreshBtn = document.getElementById('trips-refresh-btn');
+  refreshBtn.classList.add('spinning');
+  document.getElementById('trips-updated').textContent = 'Refreshing…';
+
+  try {
+    const { data: trips, error } = await supa
+      .from('requests')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    _allTrips = trips || [];
+    renderTripsList();
+    document.getElementById('trips-updated').textContent =
+      'Updated ' + new Date().toLocaleTimeString('en-NG', { hour:'2-digit', minute:'2-digit', hour12:true });
+  } catch (err) {
+    console.error(err);
+    showToast('Could not load trips', 'error');
+    document.getElementById('trips-updated').textContent = 'Failed';
+  } finally {
+    refreshBtn.classList.remove('spinning');
+  }
+}
+
+function setFilter(filter, btn) {
+  _tripFilter = filter;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderTripsList();
+}
+
+function renderTripsList() {
+  const el = document.getElementById('trips-list');
+  const filtered = _allTrips.filter(t => {
+    if (_tripFilter === 'all') return true;
+    if (['pending','paid','done','cancelled'].includes(_tripFilter)) return t.status === _tripFilter;
+    return t.service === _tripFilter;
+  });
+  if (!filtered.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-title">No trips found</div><div class="empty-desc">No trips match the selected filter.</div></div>`;
+    return;
+  }
+  el.innerHTML = filtered.map(t => buildTripRowHTML(t, true)).join('');
+}
+
+function buildTripRowHTML(t, showActions) {
+  const SVC_LABELS = { school: 'School Run', market: 'Market Run', gas: 'Gas Refill' };
+  const svcLabel = SVC_LABELS[t.service] || t.service || 'Trip';
+  const status = t.status || 'pending';
+
+  let detailHTML = '';
+  if (t.service === 'school') {
+    detailHTML = `
+      <div class="trip-row-field"><div class="trip-row-field-label">Child</div><div class="trip-row-field-value">${t.child_name || '—'}</div></div>
+      <div class="trip-row-field"><div class="trip-row-field-label">School</div><div class="trip-row-field-value">${t.school || '—'}</div></div>
+      <div class="trip-row-field"><div class="trip-row-field-label">Time</div><div class="trip-row-field-value">${t.pickup_time || '—'}</div></div>
+      <div class="trip-row-field"><div class="trip-row-field-label">Days</div><div class="trip-row-field-value">${t.days || '—'}</div></div>
+      <div class="trip-row-field full"><div class="trip-row-field-label">Address</div><div class="trip-row-field-value">${t.pickup_address || '—'}</div></div>`;
+  } else if (t.service === 'market') {
+    detailHTML = `
+      <div class="trip-row-field"><div class="trip-row-field-label">Market</div><div class="trip-row-field-value">${t.market || '—'}</div></div>
+      <div class="trip-row-field"><div class="trip-row-field-label">Booked</div><div class="trip-row-field-value">${fmtTime(t.created_at)}</div></div>
+      <div class="trip-row-field full"><div class="trip-row-field-label">Pickup</div><div class="trip-row-field-value">${t.pickup_address || '—'}</div></div>`;
+  } else if (t.service === 'gas') {
+    detailHTML = `
+      <div class="trip-row-field"><div class="trip-row-field-label">Cylinder</div><div class="trip-row-field-value">${t.cylinder_size || '—'} × ${t.cylinder_qty || 1}</div></div>
+      <div class="trip-row-field"><div class="trip-row-field-label">Booked</div><div class="trip-row-field-value">${fmtTime(t.created_at)}</div></div>
+      <div class="trip-row-field full"><div class="trip-row-field-label">Deliver to</div><div class="trip-row-field-value">${t.delivery_address || '—'}</div></div>`;
+  }
+
+  const actionsHTML = showActions ? `
+    <div class="trip-row-actions">
+      ${status !== 'done' && status !== 'cancelled' ? `<button class="trip-action-btn done" onclick="adminMarkDone('${t.id}')">Mark Done</button>` : ''}
+      ${status !== 'cancelled' && status !== 'done' ? `<button class="trip-action-btn cancel" onclick="adminCancel('${t.id}')">Cancel</button>` : ''}
+    </div>` : '';
+
+  const dotClass = { school:'school', market:'market', gas:'gas' }[t.service] || 'gas';
+
+  return `
+    <div class="trip-row">
+      <div class="trip-row-top">
+        <div class="trip-svc-dot ${dotClass}" aria-hidden="true"></div>
+        <div class="trip-row-meta">
+          <div class="trip-row-name">${t.customer_name || 'Customer'}</div>
+          <div class="trip-row-detail">${svcLabel} · ${t.customer_phone || ''} · ${fmtTime(t.created_at)}</div>
+        </div>
+        <div class="trip-row-right">
+          <div class="trip-row-fare">${t.fare ? fmtNGN(t.fare) : '—'}</div>
+          <span class="status-badge ${status}">${status}</span>
+        </div>
+      </div>
+      ${detailHTML ? `<div class="trip-row-expand">${detailHTML}</div>` : ''}
+      ${actionsHTML}
+    </div>`;
+}
+
+// ══════════════════════════════════════════════
+// RIDERS TAB
+// ══════════════════════════════════════════════
+async function loadRiders() {
+  const el = document.getElementById('riders-list');
+  el.innerHTML = `<div class="skeleton" style="height:80px;border-radius:10px;margin-bottom:12px;"></div><div class="skeleton" style="height:80px;border-radius:10px;margin-bottom:12px;"></div>`;
+  try {
+    const { data: riders, error } = await supa
+      .from('standby_riders')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    renderRiders(riders || []);
+  } catch (err) {
+    console.error(err);
+    showToast('Could not load riders', 'error');
+    el.innerHTML = `<div class="empty-state"><div class="empty-title">Failed to load</div></div>`;
+  }
+}
+
+function renderRiders(riders) {
+  const el = document.getElementById('riders-list');
+  if (!riders.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-title">No riders yet</div><div class="empty-desc">Add your first rider using the form above.</div></div>`;
+    return;
+  }
+  el.innerHTML = riders.map(r => `
+    <div class="rider-card-admin" id="rcard-${r.id}">
+      <div class="rider-avatar-admin" aria-hidden="true">${(r.name || 'R').charAt(0).toUpperCase()}</div>
+      <div class="rider-meta-admin">
+        <div class="rider-name-admin">${r.name || '—'}</div>
+        <div class="rider-details-admin">${r.phone || '—'} · ${r.keke_id || 'No keke ID'}</div>
+      </div>
+      <div class="rider-actions-admin">
+        <button class="toggle-btn ${r.status === 'standby' ? 'standby' : 'offline'}"
+          onclick="toggleRiderStatus('${r.id}', '${r.status}')"
+          aria-label="${r.status === 'standby' ? 'Set offline' : 'Set standby'} for ${r.name}">
+          ${r.status === 'standby' ? 'Standby' : 'Offline'}
+        </button>
+        <button class="remove-btn" onclick="promptRemoveRider('${r.id}', '${(r.name || 'rider').replace(/'/g, "\\'")}')"
+          aria-label="Remove ${r.name}">
+          Remove
+        </button>
+      </div>
+    </div>`).join('');
+}
+
+// Add rider
+document.getElementById('add-rider-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const name    = document.getElementById('r-name').value.trim();
+  const phone   = document.getElementById('r-phone').value.trim();
+  const wa      = document.getElementById('r-whatsapp').value.trim() || phone;
+  const keke    = document.getElementById('r-keke').value.trim();
+  if (!name || !phone) { showToast('Name and phone are required', 'error'); return; }
+
+  const btn = document.getElementById('add-rider-btn');
+  btn.disabled = true;
+  btn.querySelector('span').textContent = 'Adding…';
+
+  try {
+    const { error } = await supa.from('standby_riders').insert({
+      name, phone, whatsapp: wa, keke_id: keke, status: 'standby'
+    });
+    if (error) throw error;
+    showToast(`${name} added as a rider!`, 'success');
+    e.target.reset();
+    loadRiders();
+  } catch (err) {
+    console.error(err);
+    showToast('Could not add rider. Phone may already exist.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.querySelector('span').textContent = 'Add Rider';
+  }
+});
+
+async function toggleRiderStatus(id, currentStatus) {
+  const newStatus = currentStatus === 'standby' ? 'offline' : 'standby';
+  const btn = document.querySelector(`#rcard-${id} .toggle-btn`);
+  if (btn) { btn.disabled = true; btn.textContent = '…'; }
+  try {
+    const { error } = await supa.from('standby_riders').update({ status: newStatus }).eq('id', id);
+    if (error) throw error;
+    showToast(`Rider set to ${newStatus}`, 'success');
+    loadRiders();
+  } catch (err) {
+    console.error(err);
+    showToast('Could not update rider status', 'error');
+    if (btn) { btn.disabled = false; btn.textContent = currentStatus; }
+  }
+}
+
+function promptRemoveRider(id, name) {
+  _confirmAction = async () => {
+    try {
+      const { error } = await supa.from('standby_riders').delete().eq('id', id);
+      if (error) throw error;
+      showToast(`${name} removed`, 'success');
+      loadRiders();
+    } catch (err) {
+      console.error(err);
+      showToast('Could not remove rider', 'error');
+    }
+  };
+  document.getElementById('conf-title').textContent = `Remove ${name}?`;
+  document.getElementById('conf-sub').textContent   = `This rider will no longer receive trip assignments.`;
+  document.getElementById('m-confirm').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+// ══════════════════════════════════════════════
+// ADMIN TRIP ACTIONS
+// ══════════════════════════════════════════════
+function adminMarkDone(id) {
+  _confirmAction = async () => {
+    try {
+      const { error } = await supa.from('requests').update({
+        status: 'done', completed_at: new Date().toISOString()
+      }).eq('id', id);
+      if (error) throw error;
+      showToast('Trip marked as done', 'success');
+      _allTrips = _allTrips.map(t => t.id === id ? { ...t, status: 'done' } : t);
+      renderTripsList();
+    } catch (err) {
+      console.error(err);
+      showToast('Could not update trip', 'error');
+    }
+  };
+  document.getElementById('conf-title').textContent = 'Mark trip as done?';
+  document.getElementById('conf-sub').textContent   = 'This will close the trip and mark it completed.';
+  document.getElementById('conf-yes').style.background = 'var(--green)';
+  document.getElementById('m-confirm').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function adminCancel(id) {
+  _confirmAction = async () => {
+    try {
+      const { error } = await supa.from('requests').update({ status: 'cancelled' }).eq('id', id);
+      if (error) throw error;
+      showToast('Trip cancelled', 'success');
+      _allTrips = _allTrips.map(t => t.id === id ? { ...t, status: 'cancelled' } : t);
+      renderTripsList();
+    } catch (err) {
+      console.error(err);
+      showToast('Could not cancel trip', 'error');
+    }
+  };
+  document.getElementById('conf-title').textContent = 'Cancel this trip?';
+  document.getElementById('conf-sub').textContent   = 'The customer will not be notified automatically.';
+  document.getElementById('conf-yes').style.background = 'var(--red)';
+  document.getElementById('m-confirm').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeConfirm() {
+  document.getElementById('m-confirm').classList.remove('show');
+  document.body.style.overflow = '';
+  _confirmAction = null;
+}
+
+async function execConfirm() {
+  if (!_confirmAction) return;
+  const btn = document.getElementById('conf-yes');
+  btn.disabled = true;
+  btn.textContent = 'Working…';
+  await _confirmAction();
+  closeConfirm();
+  btn.disabled = false;
+  btn.textContent = 'Confirm';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeConfirm(); });
+</script>
+</body>
+</html>

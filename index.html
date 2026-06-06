@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Drop – School runs, market runs and gas refills in Port Harcourt. Book a vetted keke rider in minutes.">
+<title>Drop — Move With Drop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+:root {
+  --y: #FFD600;
+  --y-dim: #E6C000;
+  --b: #0A0A0A;
+  --w: #FAFAF5;
+  --g1: #F0F0E8;
+  --g2: #D8D8D0;
+  --g5: #787870;
+  --green: #16A34A;
+  --green-bg: #F0FDF4;
+  --red: #DC2626;
+  --red-bg: #FEF2F2;
+  --r: 4px;
+  --r-lg: 8px;
+  --shadow: 4px 4px 0px 0px var(--b);
+  --shadow-y: 4px 4px 0px 0px var(--y-dim);
+  --transition: 150ms ease-out;
+  --font-head: 'Montserrat', sans-serif;
+  --font-body: 'Poppins', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--w);
+  color: var(--b);
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea {
+  font-family: var(--font-body);
+  font-size: 1rem;
+}
+img { display: block; max-width: 100%; }
+
+/* ── UTILS ── */
+.sr-only { position: absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }
+.container { width: 100%; max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+
+/* ── NAV ── */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--b);
+  border-bottom: 2px solid var(--y);
+}
+.nav__inner {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 56px;
+}
+.nav__logo {
+  display: flex; align-items: center; gap: 8px;
+}
+.nav__logo-mark {
+  width: 32px; height: 32px;
+  background: var(--y);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+}
+.nav__logo-mark svg { width: 20px; height: 20px; }
+.nav__wordmark {
+  font-family: var(--font-head);
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--w);
+  letter-spacing: -0.5px;
+}
+.nav__wordmark span { color: var(--y); }
+.nav__link {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--g2);
+  border: 1.5px solid var(--g5);
+  border-radius: var(--r);
+  padding: 6px 14px;
+  transition: border-color var(--transition), color var(--transition);
+  white-space: nowrap;
+}
+.nav__link:hover { border-color: var(--y); color: var(--y); }
+
+/* ── HERO ── */
+.hero {
+  background: var(--y);
+  position: relative;
+  overflow: hidden;
+  padding: 56px 0 48px;
+}
+/* Geometric CSS background shapes */
+.hero::before {
+  content: '';
+  position: absolute; top: -60px; right: -60px;
+  width: 220px; height: 220px;
+  background: rgba(0,0,0,.07);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute; bottom: -30px; left: 20px;
+  width: 120px; height: 120px;
+  background: rgba(0,0,0,.05);
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+.hero__geo {
+  position: absolute; top: 30px; left: -20px;
+  width: 80px; height: 80px;
+  border: 3px solid rgba(0,0,0,.1);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.hero__geo2 {
+  position: absolute; bottom: 20px; right: 40px;
+  width: 48px; height: 48px;
+  background: rgba(0,0,0,.08);
+  pointer-events: none;
+}
+.hero__content { position: relative; z-index: 1; }
+.hero__eyebrow {
+  display: inline-block;
+  background: var(--b);
+  color: var(--y);
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 2px;
+  margin-bottom: 16px;
+}
+.hero__headline {
+  font-family: var(--font-head);
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  font-weight: 900;
+  color: var(--b);
+  line-height: 1;
+  letter-spacing: -2px;
+  margin-bottom: 16px;
+}
+.hero__sub {
+  font-size: 1rem;
+  font-weight: 400;
+  color: rgba(10,10,10,.7);
+  max-width: 480px;
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+/* ── SERVICE CARDS ── */
+.services {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+@media (min-width: 520px) { .services { grid-template-columns: repeat(3, 1fr); } }
+
+.svc-card {
+  background: var(--b);
+  color: var(--w);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  cursor: pointer;
+  border: 2px solid var(--b);
+  box-shadow: var(--shadow);
+  transition: transform var(--transition), box-shadow var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 140px;
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (max-width: 519px) {
+  .svc-card { flex-direction: row; align-items: center; min-height: 80px; padding: 16px; }
+}
+.svc-card:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0px 0px var(--b); }
+.svc-card:active { transform: translate(2px,2px); box-shadow: 2px 2px 0px 0px var(--b); }
+.svc-card__icon {
+  width: 44px; height: 44px;
+  background: var(--y);
+  border-radius: var(--r);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.svc-card__icon svg { width: 24px; height: 24px; color: var(--b); }
+.svc-card__body { flex: 1; }
+.svc-card__name {
+  font-family: var(--font-head);
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--w);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.svc-card__desc {
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: var(--g2);
+  line-height: 1.4;
+}
+.svc-card__cta {
+  margin-top: auto;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--y);
+  display: flex; align-items: center; gap: 4px;
+}
+@media (max-width: 519px) { .svc-card__cta { display: none; } }
+.svc-card__cta svg { width: 14px; height: 14px; }
+
+/* ── HOW IT WORKS ── */
+.how { padding: 64px 0; background: var(--w); }
+.section-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--g5);
+  margin-bottom: 12px;
+}
+.section-title {
+  font-family: var(--font-head);
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: 900;
+  color: var(--b);
+  letter-spacing: -1px;
+  line-height: 1.1;
+  margin-bottom: 48px;
+}
+.steps {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+@media (min-width: 640px) { .steps { grid-template-columns: repeat(3, 1fr); gap: 32px; } }
+.step {
+  display: flex;
+  gap: 16px;
+  padding: 24px 0;
+  border-bottom: 1.5px solid var(--g2);
+  position: relative;
+}
+@media (min-width: 640px) {
+  .step { flex-direction: column; border-bottom: none; padding: 0; }
+  .step::after {
+    content: '';
+    position: absolute; top: 22px; right: -16px;
+    width: 32px; height: 2px;
+    background: var(--y);
+  }
+  .step:last-child::after { display: none; }
+}
+.step__num {
+  width: 44px; height: 44px;
+  background: var(--y);
+  border: 2px solid var(--b);
+  border-radius: var(--r);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-family: var(--font-head);
+  font-size: 1.125rem;
+  font-weight: 900;
+  color: var(--b);
+}
+.step__body {}
+.step__title {
+  font-family: var(--font-head);
+  font-size: 1rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+.step__desc {
+  font-size: 0.8125rem;
+  font-weight: 300;
+  color: var(--g5);
+  line-height: 1.6;
+}
+
+/* ── TRUST ── */
+.trust {
+  background: var(--b);
+  padding: 56px 0;
+}
+.trust .section-label { color: rgba(250,250,245,.4); }
+.trust .section-title { color: var(--w); }
+.trust-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (min-width: 640px) { .trust-grid { grid-template-columns: repeat(4, 1fr); } }
+.trust-card {
+  background: rgba(255,214,0,.07);
+  border: 1.5px solid rgba(255,214,0,.2);
+  border-radius: var(--r-lg);
+  padding: 20px 16px;
+}
+.trust-card__icon {
+  width: 36px; height: 36px;
+  background: var(--y);
+  border-radius: var(--r);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 12px;
+}
+.trust-card__icon svg { width: 20px; height: 20px; color: var(--b); }
+.trust-card__title {
+  font-family: var(--font-head);
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: var(--w);
+  margin-bottom: 4px;
+}
+.trust-card__desc {
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: rgba(250,250,245,.5);
+  line-height: 1.5;
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--b);
+  border-top: 1.5px solid rgba(255,255,255,.08);
+  padding: 32px 0;
+}
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footer-copy {
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: rgba(250,250,245,.35);
+}
+.footer-links {
+  display: flex; gap: 20px;
+}
+.footer-links a {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: rgba(250,250,245,.4);
+  transition: color var(--transition);
+}
+.footer-links a:hover { color: var(--y); }
+
+/* ── MODALS ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  z-index: 1000;
+  display: none;
+  align-items: flex-end;
+}
+@media (min-width: 640px) { .modal-overlay { align-items: center; justify-content: center; } }
+.modal-overlay.show { display: flex; }
+.modal-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(10,10,10,.75);
+  animation: fadeIn 200ms ease-out;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal-sheet {
+  position: relative; z-index: 1;
+  background: var(--w);
+  width: 100%;
+  max-height: 92dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: 16px 16px 0 0;
+  animation: slideUp 280ms cubic-bezier(.32,.72,0,1);
+}
+@media (min-width: 640px) {
+  .modal-sheet {
+    max-width: 480px;
+    max-height: 90dvh;
+    border-radius: var(--r-lg);
+    animation: scaleIn 220ms cubic-bezier(.32,.72,0,1);
+  }
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes scaleIn { from { opacity:0; transform: scale(.95); } to { opacity:1; transform: scale(1); } }
+
+.modal-handle {
+  width: 40px; height: 4px;
+  background: var(--g2);
+  border-radius: 99px;
+  margin: 12px auto 0;
+}
+@media (min-width: 640px) { .modal-handle { display: none; } }
+
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 20px 0;
+  gap: 12px;
+}
+.modal-title {
+  font-family: var(--font-head);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.modal-close {
+  width: 36px; height: 36px;
+  border: none; background: var(--g1);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--transition);
+}
+.modal-close:hover { background: var(--g2); }
+.modal-close svg { width: 18px; height: 18px; }
+.modal-body { padding: 20px; }
+
+/* ── FORM ELEMENTS ── */
+.form-group { margin-bottom: 16px; }
+.form-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--g5);
+  margin-bottom: 6px;
+}
+.form-input, .form-select {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  background: var(--g1);
+  border: 2px solid var(--g2);
+  border-radius: var(--r);
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--b);
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color var(--transition), background var(--transition);
+  outline: none;
+}
+.form-input:focus, .form-select:focus {
+  border-color: var(--b);
+  background: #fff;
+}
+.form-input::placeholder { color: var(--g5); font-weight: 300; }
+.form-select-wrap { position: relative; }
+.form-select-wrap::after {
+  content: '';
+  position: absolute; top: 50%; right: 14px;
+  transform: translateY(-50%);
+  width: 0; height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--b);
+  pointer-events: none;
+}
+
+/* Day chips */
+.day-chips {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-top: 4px;
+}
+.day-chip {
+  position: relative;
+}
+.day-chip input[type="checkbox"] {
+  position: absolute; opacity: 0; width: 0; height: 0;
+}
+.day-chip label {
+  display: flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px;
+  background: var(--g1);
+  border: 2px solid var(--g2);
+  border-radius: var(--r);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all var(--transition);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.day-chip input:checked + label {
+  background: var(--b);
+  border-color: var(--b);
+  color: var(--y);
+  box-shadow: var(--shadow);
+}
+.day-chip label:hover { border-color: var(--b); }
+.day-chip input:focus-visible + label { outline: 2px solid var(--b); outline-offset: 2px; }
+
+/* Fare box */
+.fare-box {
+  background: var(--b);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  margin-top: 8px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+}
+.fare-box__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(250,250,245,.5);
+  margin-bottom: 4px;
+}
+.fare-box__amount {
+  font-family: var(--font-head);
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: var(--y);
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.fare-box__note {
+  font-size: 0.6875rem;
+  font-weight: 300;
+  color: rgba(250,250,245,.4);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+.fare-box__badge {
+  background: var(--y);
+  color: var(--b);
+  border-radius: var(--r);
+  padding: 6px 10px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── PRIMARY BUTTON ── */
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%;
+  height: 52px;
+  border: none; cursor: pointer;
+  border-radius: var(--r);
+  font-family: var(--font-head);
+  font-size: 0.9375rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  position: relative;
+}
+.btn:focus-visible { outline: 3px solid var(--b); outline-offset: 2px; }
+.btn-primary {
+  background: var(--y);
+  color: var(--b);
+  box-shadow: var(--shadow);
+}
+.btn-primary:hover { transform: translate(-1px,-1px); box-shadow: 5px 5px 0px 0px var(--b); }
+.btn-primary:active { transform: translate(2px,2px); box-shadow: 2px 2px 0px 0px var(--b); }
+.btn-primary:disabled {
+  background: var(--g2); color: var(--g5); box-shadow: none; cursor: not-allowed; transform: none;
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--b);
+  border: 2px solid var(--b);
+  margin-top: 10px;
+  height: 44px;
+  font-size: 0.875rem;
+}
+.btn-secondary:hover { background: var(--g1); }
+.btn-secondary:active { background: var(--g2); }
+.btn-green {
+  background: var(--green);
+  color: #fff;
+  box-shadow: 4px 4px 0px 0px #0a5c24;
+}
+.btn-green:hover { transform: translate(-1px,-1px); box-shadow: 5px 5px 0px 0px #0a5c24; }
+.btn-green:active { transform: translate(2px,2px); box-shadow: 2px 2px 0px 0px #0a5c24; }
+
+/* Loading spinner on button */
+.btn .spinner {
+  width: 18px; height: 18px;
+  border: 2.5px solid rgba(10,10,10,.2);
+  border-top-color: var(--b);
+  border-radius: 50%;
+  animation: spin 600ms linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.btn-primary .spinner { border-color: rgba(10,10,10,.25); border-top-color: var(--b); }
+.btn-green .spinner { border-color: rgba(255,255,255,.3); border-top-color: #fff; }
+
+/* ── RIDER ASSIGNED MODAL ── */
+.rider-card {
+  background: var(--b);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 16px;
+}
+.rider-avatar {
+  width: 52px; height: 52px;
+  background: var(--y);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-family: var(--font-head);
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--b);
+}
+.rider-info {}
+.rider-name {
+  font-family: var(--font-head);
+  font-size: 1.0625rem;
+  font-weight: 800;
+  color: var(--w);
+  margin-bottom: 4px;
+}
+.rider-id {
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: var(--g5);
+}
+.rider-pulse-wrap {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 20px;
+}
+.rider-pulse {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--y);
+  position: relative;
+  flex-shrink: 0;
+}
+.rider-pulse::before {
+  content: '';
+  position: absolute; inset: -4px;
+  border-radius: 50%;
+  background: var(--y);
+  opacity: .3;
+  animation: pulse 1.4s ease-out infinite;
+}
+@keyframes pulse {
+  0% { transform: scale(1); opacity: .35; }
+  70% { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(1); opacity: 0; }
+}
+.rider-pulse-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--g5);
+}
+.trust-line {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--g1);
+  border-radius: var(--r);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+}
+.trust-line svg { width: 16px; height: 16px; color: var(--green); flex-shrink: 0; }
+.trust-line span {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--g5);
+}
+
+/* ── DONE MODAL (contact reveal) ── */
+.done-header {
+  text-align: center;
+  padding: 32px 20px 16px;
+}
+.done-check {
+  width: 64px; height: 64px;
+  background: var(--green);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+  animation: popIn 400ms cubic-bezier(.175,.885,.32,1.275);
+}
+@keyframes popIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.done-check svg { width: 32px; height: 32px; color: #fff; }
+.done-title {
+  font-family: var(--font-head);
+  font-size: 1.375rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+.done-sub {
+  font-size: 0.875rem;
+  font-weight: 300;
+  color: var(--g5);
+}
+.contact-card {
+  background: var(--b);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  margin: 0 20px 20px;
+  animation: fadeSlideUp 350ms 300ms both ease-out;
+}
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.contact-name {
+  font-family: var(--font-head);
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--w);
+  margin-bottom: 16px;
+}
+.contact-actions { display: flex; flex-direction: column; gap: 10px; }
+.contact-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  height: 52px;
+  border-radius: var(--r);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-head);
+  font-size: 0.9375rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: transform var(--transition), box-shadow var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+.contact-btn:hover { transform: translate(-1px,-1px); }
+.contact-btn:active { transform: translate(1px,1px); }
+.contact-btn--call {
+  background: var(--y);
+  color: var(--b);
+  box-shadow: var(--shadow);
+}
+.contact-btn--wa {
+  background: #25D366;
+  color: #fff;
+  box-shadow: 4px 4px 0px 0px #0e8a3f;
+}
+.contact-btn svg { width: 20px; height: 20px; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(120%);
+  z-index: 9999;
+  background: var(--b);
+  color: var(--w);
+  padding: 12px 20px;
+  border-radius: 99px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  max-width: calc(100vw - 40px);
+  white-space: normal;
+  text-align: center;
+  transition: transform 280ms cubic-bezier(.32,.72,0,1);
+  border-left: 3px solid var(--y);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.error { border-left-color: var(--red); }
+
+/* ── FORM ERROR ── */
+.form-error {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--red);
+  margin-top: 4px;
+  display: none;
+}
+.form-group.has-error .form-input,
+.form-group.has-error .form-select {
+  border-color: var(--red);
+  background: var(--red-bg);
+}
+.form-group.has-error .form-error { display: block; }
+
+/* ── VERSION STAMP ── */
+.vstamp {
+  position: fixed; bottom: 6px; right: 8px;
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: rgba(0,0,0,.15);
+  pointer-events: none;
+  z-index: 9998;
+  font-family: monospace;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" role="navigation" aria-label="Main">
+  <div class="container nav__inner">
+    <a href="/" class="nav__logo" aria-label="Drop home">
+      <div class="nav__logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 2 C10 2 4 8 4 12.5 C4 15.8 6.7 18.5 10 18.5 C13.3 18.5 16 15.8 16 12.5 C16 8 10 2 10 2Z" fill="#0A0A0A"/>
+        </svg>
+      </div>
+      <span class="nav__wordmark">Drop<span>.</span></span>
+    </a>
+    <a href="/rider.html" class="nav__link">For Riders →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<main>
+<section class="hero" aria-labelledby="hero-headline">
+  <div class="hero__geo" aria-hidden="true"></div>
+  <div class="hero__geo2" aria-hidden="true"></div>
+  <div class="container hero__content">
+    <div class="hero__eyebrow">Port Harcourt</div>
+    <h1 class="hero__headline" id="hero-headline">Drop<br>delivers.</h1>
+    <p class="hero__sub">School runs, market runs, and gas refills — handled by vetted keke riders in your area.</p>
+    <div class="services" role="list">
+
+      <!-- SCHOOL RUN -->
+      <div class="svc-card" role="listitem" tabindex="0" onclick="openModal('m-school')" onkeydown="if(event.key==='Enter'||event.key===' ')openModal('m-school')" aria-haspopup="dialog" aria-label="Book a school run">
+        <div class="svc-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="6" width="22" height="13" rx="2"/>
+            <path d="M1 11h22M8 6V4M16 6V4"/>
+            <circle cx="7" cy="19" r="1.5" fill="currentColor" stroke="none"/>
+            <circle cx="17" cy="19" r="1.5" fill="currentColor" stroke="none"/>
+          </svg>
+        </div>
+        <div class="svc-card__body">
+          <div class="svc-card__name">School Run</div>
+          <div class="svc-card__desc">Morning pickup & afternoon return for your child</div>
+        </div>
+        <div class="svc-card__cta">
+          Book now
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7h10M8 3l4 4-4 4"/></svg>
+        </div>
+      </div>
+
+      <!-- MARKET RUN -->
+      <div class="svc-card" role="listitem" tabindex="0" onclick="openModal('m-market')" onkeydown="if(event.key==='Enter'||event.key===' ')openModal('m-market')" aria-haspopup="dialog" aria-label="Book a market run">
+        <div class="svc-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 01-8 0"/>
+          </svg>
+        </div>
+        <div class="svc-card__body">
+          <div class="svc-card__name">Market Run</div>
+          <div class="svc-card__desc">Keke to the market and back — load included</div>
+        </div>
+        <div class="svc-card__cta">
+          Book now
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7h10M8 3l4 4-4 4"/></svg>
+        </div>
+      </div>
+
+      <!-- GAS REFILL -->
+      <div class="svc-card" role="listitem" tabindex="0" onclick="openModal('m-gas')" onkeydown="if(event.key==='Enter'||event.key===' ')openModal('m-gas')" aria-haspopup="dialog" aria-label="Book a gas refill">
+        <div class="svc-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 3h10v2a6 6 0 016 6v1a3 3 0 01-3 3h-1v4a2 2 0 01-2 2H7a2 2 0 01-2-2V8a5 5 0 015-5z"/>
+            <path d="M12 9v4M10 11h4"/>
+          </svg>
+        </div>
+        <div class="svc-card__body">
+          <div class="svc-card__name">Gas Refill</div>
+          <div class="svc-card__desc">Cylinder pickup, refill, and home delivery</div>
+        </div>
+        <div class="svc-card__cta">
+          Book now
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7h10M8 3l4 4-4 4"/></svg>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" aria-labelledby="how-title">
+  <div class="container">
+    <p class="section-label">How it works</p>
+    <h2 class="section-title" id="how-title">Three taps to done.</h2>
+    <div class="steps" role="list">
+      <div class="step" role="listitem">
+        <div class="step__num" aria-hidden="true">1</div>
+        <div class="step__body">
+          <div class="step__title">Pick your service</div>
+          <div class="step__desc">School run, market trip, or gas refill — tell us what you need and where.</div>
+        </div>
+      </div>
+      <div class="step" role="listitem">
+        <div class="step__num" aria-hidden="true">2</div>
+        <div class="step__body">
+          <div class="step__title">Pay securely</div>
+          <div class="step__desc">Card or transfer via Paystack. Your rider's contact stays hidden until payment clears.</div>
+        </div>
+      </div>
+      <div class="step" role="listitem">
+        <div class="step__num" aria-hidden="true">3</div>
+        <div class="step__body">
+          <div class="step__title">Rider is on the way</div>
+          <div class="step__desc">Get their number and WhatsApp directly. No middleman from here.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section class="trust" aria-labelledby="trust-title">
+  <div class="container">
+    <p class="section-label">Why Drop</p>
+    <h2 class="section-title" id="trust-title">Built for PH parents.</h2>
+    <div class="trust-grid" role="list">
+      <div class="trust-card" role="listitem">
+        <div class="trust-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a9 9 0 100 18A9 9 0 0010 1zm3.707 7.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+        </div>
+        <div class="trust-card__title">Vetted Riders</div>
+        <div class="trust-card__desc">Every keke operator is screened before joining</div>
+      </div>
+      <div class="trust-card" role="listitem">
+        <div class="trust-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a1 1 0 100-2 1 1 0 000 2z"/></svg>
+        </div>
+        <div class="trust-card__title">Secure Payment</div>
+        <div class="trust-card__desc">Paystack protects every transaction</div>
+      </div>
+      <div class="trust-card" role="listitem">
+        <div class="trust-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+        </div>
+        <div class="trust-card__title">Local Knowledge</div>
+        <div class="trust-card__desc">Riders know PH routes, markets, and schools</div>
+      </div>
+      <div class="trust-card" role="listitem">
+        <div class="trust-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+        </div>
+        <div class="trust-card__title">Always Reachable</div>
+        <div class="trust-card__desc">Direct phone & WhatsApp once you've paid</div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- FOOTER -->
+<footer role="contentinfo">
+  <div class="container footer-inner">
+    <p class="footer-copy">© 2025 Drop. Port Harcourt, Nigeria.</p>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="/rider.html">Rider sign-in</a>
+      <a href="mailto:hello@movewithdrop.com">Contact</a>
+    </nav>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════
+     MODAL — SCHOOL RUN
+     ═══════════════════════════════════════════ -->
+<div id="m-school" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="school-title">
+  <div class="modal-backdrop" onclick="closeModal('m-school')"></div>
+  <div class="modal-sheet">
+    <div class="modal-handle" aria-hidden="true"></div>
+    <div class="modal-header">
+      <h2 class="modal-title" id="school-title">School Run</h2>
+      <button class="modal-close" onclick="closeModal('m-school')" aria-label="Close">
+        <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M2 2l14 14M16 2L2 16"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="school-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="sc-name">Parent / Guardian name <span aria-hidden="true">*</span></label>
+          <input id="sc-name" class="form-input" type="text" placeholder="e.g. Mrs Adaeze Okonkwo" autocomplete="name" required>
+          <p class="form-error" role="alert">Please enter your name</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="sc-phone">Phone number <span aria-hidden="true">*</span></label>
+          <input id="sc-phone" class="form-input" type="tel" placeholder="080XXXXXXXXX" autocomplete="tel" required>
+          <p class="form-error" role="alert">Please enter a valid phone number</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="sc-child">Child's name <span aria-hidden="true">*</span></label>
+          <input id="sc-child" class="form-input" type="text" placeholder="e.g. Chukwuemeka" required>
+          <p class="form-error" role="alert">Please enter your child's name</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="sc-school">School <span aria-hidden="true">*</span></label>
+          <div class="form-select-wrap">
+            <select id="sc-school" class="form-select" required>
+              <option value="">Select school…</option>
+              <option>Rumuola Primary School</option>
+              <option>Government Secondary School, D/Line</option>
+              <option>Graceland International School</option>
+              <option>Capital Science Academy</option>
+              <option>Deeper Life High School</option>
+              <option>Christ the King College</option>
+              <option>Wisdom International School</option>
+              <option>Springs of Life School</option>
+              <option>Heritage Schools</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <p class="form-error" role="alert">Please select a school</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="sc-address">Home / pickup address <span aria-hidden="true">*</span></label>
+          <input id="sc-address" class="form-input" type="text" placeholder="Street, Estate or Landmark" autocomplete="street-address" required>
+          <p class="form-error" role="alert">Please enter an address</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Days needed <span aria-hidden="true">*</span></label>
+          <div class="day-chips" role="group" aria-label="Select school run days">
+            <div class="day-chip"><input type="checkbox" id="sc-mon" value="Mon" name="sc-days"><label for="sc-mon">Mon</label></div>
+            <div class="day-chip"><input type="checkbox" id="sc-tue" value="Tue" name="sc-days"><label for="sc-tue">Tue</label></div>
+            <div class="day-chip"><input type="checkbox" id="sc-wed" value="Wed" name="sc-days"><label for="sc-wed">Wed</label></div>
+            <div class="day-chip"><input type="checkbox" id="sc-thu" value="Thu" name="sc-days"><label for="sc-thu">Thu</label></div>
+            <div class="day-chip"><input type="checkbox" id="sc-fri" value="Fri" name="sc-days"><label for="sc-fri">Fri</label></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="sc-time">Pickup time <span aria-hidden="true">*</span></label>
+          <div class="form-select-wrap">
+            <select id="sc-time" class="form-select" required>
+              <option value="">Select time…</option>
+              <option>5:30 AM</option>
+              <option>6:00 AM</option>
+              <option>6:30 AM</option>
+              <option>7:00 AM</option>
+              <option>7:30 AM</option>
+              <option>8:00 AM</option>
+            </select>
+          </div>
+          <p class="form-error" role="alert">Please select a pickup time</p>
+        </div>
+        <div class="fare-box" aria-live="polite">
+          <div>
+            <div class="fare-box__label">Per-day fare</div>
+            <div class="fare-box__amount" id="sc-fare">₦2,000</div>
+            <div class="fare-box__note">Return trip (morning + afternoon)</div>
+          </div>
+          <div class="fare-box__badge">Pay on confirm</div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top:20px">
+          <span class="btn-text">Confirm School Run</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MODAL — MARKET RUN
+     ═══════════════════════════════════════════ -->
+<div id="m-market" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="market-title">
+  <div class="modal-backdrop" onclick="closeModal('m-market')"></div>
+  <div class="modal-sheet">
+    <div class="modal-handle" aria-hidden="true"></div>
+    <div class="modal-header">
+      <h2 class="modal-title" id="market-title">Market Run</h2>
+      <button class="modal-close" onclick="closeModal('m-market')" aria-label="Close">
+        <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M2 2l14 14M16 2L2 16"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="market-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="mk-name">Your name <span aria-hidden="true">*</span></label>
+          <input id="mk-name" class="form-input" type="text" placeholder="e.g. Mama Emeka" autocomplete="name" required>
+          <p class="form-error" role="alert">Please enter your name</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="mk-phone">Phone number <span aria-hidden="true">*</span></label>
+          <input id="mk-phone" class="form-input" type="tel" placeholder="080XXXXXXXXX" autocomplete="tel" required>
+          <p class="form-error" role="alert">Please enter a valid phone number</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="mk-market">Market destination <span aria-hidden="true">*</span></label>
+          <div class="form-select-wrap">
+            <select id="mk-market" class="form-select" onchange="updateMarketFare()" required>
+              <option value="">Select market…</option>
+              <option value="1500">Mile 1 Market</option>
+              <option value="1500">Mile 3 Market</option>
+              <option value="1500">Rumuola Market</option>
+              <option value="1800">Rumuokwurusi Market</option>
+              <option value="2000">Choba Market</option>
+              <option value="2000">Mgbuoba Market</option>
+              <option value="1800">Waterlines Market</option>
+              <option value="2000">Eleme Market</option>
+              <option value="2200">Oyigbo Market</option>
+              <option value="1500">Oil Mill Market</option>
+              <option value="1800">Diobu Market</option>
+              <option value="2500">Tombia Market</option>
+            </select>
+          </div>
+          <p class="form-error" role="alert">Please select a market</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="mk-address">Pickup address <span aria-hidden="true">*</span></label>
+          <input id="mk-address" class="form-input" type="text" placeholder="Your street or nearest landmark" autocomplete="street-address" required>
+          <p class="form-error" role="alert">Please enter your address</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="mk-notes">Notes (optional)</label>
+          <input id="mk-notes" class="form-input" type="text" placeholder="e.g. Will have heavy bags on return">
+        </div>
+        <div class="fare-box" aria-live="polite">
+          <div>
+            <div class="fare-box__label">Flat rate</div>
+            <div class="fare-box__amount" id="mk-fare">₦1,500</div>
+            <div class="fare-box__note">To market and back, including load</div>
+          </div>
+          <div class="fare-box__badge">Pay on confirm</div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top:20px">
+          <span class="btn-text">Confirm Market Run</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MODAL — GAS REFILL
+     ═══════════════════════════════════════════ -->
+<div id="m-gas" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="gas-title">
+  <div class="modal-backdrop" onclick="closeModal('m-gas')"></div>
+  <div class="modal-sheet">
+    <div class="modal-handle" aria-hidden="true"></div>
+    <div class="modal-header">
+      <h2 class="modal-title" id="gas-title">Gas Refill</h2>
+      <button class="modal-close" onclick="closeModal('m-gas')" aria-label="Close">
+        <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M2 2l14 14M16 2L2 16"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="gas-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="gs-name">Your name <span aria-hidden="true">*</span></label>
+          <input id="gs-name" class="form-input" type="text" placeholder="e.g. Mr Tunde Bello" autocomplete="name" required>
+          <p class="form-error" role="alert">Please enter your name</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="gs-phone">Phone number <span aria-hidden="true">*</span></label>
+          <input id="gs-phone" class="form-input" type="tel" placeholder="080XXXXXXXXX" autocomplete="tel" required>
+          <p class="form-error" role="alert">Please enter a valid phone number</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="gs-size">Cylinder size <span aria-hidden="true">*</span></label>
+          <div class="form-select-wrap">
+            <select id="gs-size" class="form-select" onchange="updateGasFare()" required>
+              <option value="">Select size…</option>
+              <option value="1800">3 kg</option>
+              <option value="2800">5 kg</option>
+              <option value="5200">10 kg</option>
+              <option value="6500">12.5 kg</option>
+              <option value="12000">25 kg</option>
+            </select>
+          </div>
+          <p class="form-error" role="alert">Please select a cylinder size</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="gs-qty">Number of cylinders</label>
+          <div class="form-select-wrap">
+            <select id="gs-qty" class="form-select" onchange="updateGasFare()">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="gs-address">Delivery address <span aria-hidden="true">*</span></label>
+          <input id="gs-address" class="form-input" type="text" placeholder="Your street or nearest landmark" autocomplete="street-address" required>
+          <p class="form-error" role="alert">Please enter your delivery address</p>
+        </div>
+        <div class="fare-box" aria-live="polite">
+          <div>
+            <div class="fare-box__label">Gas + delivery</div>
+            <div class="fare-box__amount" id="gs-fare">₦—</div>
+            <div class="fare-box__note">Select cylinder size to see price</div>
+          </div>
+          <div class="fare-box__badge">Pay on confirm</div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top:20px">
+          <span class="btn-text">Confirm Gas Refill</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MODAL — RIDER ASSIGNED / PAY
+     ═══════════════════════════════════════════ -->
+<div id="m-pay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="pay-title">
+  <div class="modal-backdrop"></div>
+  <div class="modal-sheet">
+    <div class="modal-handle" aria-hidden="true"></div>
+    <div class="modal-header">
+      <h2 class="modal-title" id="pay-title">Rider Assigned</h2>
+      <button class="modal-close" onclick="closeModal('m-pay')" aria-label="Close">
+        <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M2 2l14 14M16 2L2 16"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="rider-pulse-wrap">
+        <div class="rider-pulse" aria-hidden="true"></div>
+        <span class="rider-pulse-label">A rider near you is ready</span>
+      </div>
+      <div class="rider-card">
+        <div class="rider-avatar" id="pay-avatar" aria-hidden="true">R</div>
+        <div class="rider-info">
+          <div class="rider-name" id="pay-rider-name">Your Rider</div>
+          <div class="rider-id" id="pay-keke-id">Keke ID loading…</div>
+        </div>
+      </div>
+      <div class="trust-line">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 1a7 7 0 100 14A7 7 0 008 1zm3.53 5.47a.75.75 0 00-1.06-1.06L7 8.88 5.53 7.41a.75.75 0 00-1.06 1.06l2 2a.75.75 0 001.06 0l4-4z" clip-rule="evenodd"/></svg>
+        <span>Rider contact revealed only after payment</span>
+      </div>
+      <div class="fare-box" style="margin-bottom:16px">
+        <div>
+          <div class="fare-box__label" id="pay-service-label">Service</div>
+          <div class="fare-box__amount" id="pay-amount">₦—</div>
+          <div class="fare-box__note">Secure payment via Paystack</div>
+        </div>
+        <div class="fare-box__badge">One-time</div>
+      </div>
+      <button class="btn btn-primary" id="pay-btn" onclick="initiatePaystack()">
+        <span class="btn-text">Pay Securely →</span>
+      </button>
+      <button class="btn btn-secondary" onclick="closeModal('m-pay')">Cancel booking</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MODAL — DONE / CONTACT REVEAL
+     ═══════════════════════════════════════════ -->
+<div id="m-done" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="done-title">
+  <div class="modal-backdrop"></div>
+  <div class="modal-sheet">
+    <div class="modal-handle" aria-hidden="true"></div>
+    <div class="done-header">
+      <div class="done-check" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16l7 7L26 9"/></svg>
+      </div>
+      <h2 class="done-title" id="done-title">Payment confirmed!</h2>
+      <p class="done-sub">Your rider is ready. Contact them directly.</p>
+    </div>
+    <div class="contact-card">
+      <div class="contact-name" id="done-rider-name">Rider Name</div>
+      <div class="contact-actions">
+        <a id="done-call" href="#" class="contact-btn contact-btn--call" onclick="return guardContact(this)">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+          Call Rider
+        </a>
+        <a id="done-wa" href="#" class="contact-btn contact-btn--wa" onclick="return guardContact(this)" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.108.549 4.09 1.512 5.813L.057 23.5l5.83-1.43A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.796 9.796 0 01-4.992-1.368l-.356-.213-3.469.85.878-3.38-.232-.369A9.776 9.776 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182c5.43 0 9.818 4.388 9.818 9.818 0 5.43-4.388 9.818-9.818 9.818z"/></svg>
+          WhatsApp Rider
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MODAL — TRACK (fallback state)
+     ═══════════════════════════════════════════ -->
+<div id="m-track" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="track-title">
+  <div class="modal-backdrop" onclick="closeModal('m-track')"></div>
+  <div class="modal-sheet">
+    <div class="modal-handle" aria-hidden="true"></div>
+    <div class="modal-header">
+      <h2 class="modal-title" id="track-title">Booking Status</h2>
+      <button class="modal-close" onclick="closeModal('m-track')" aria-label="Close">
+        <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M2 2l14 14M16 2L2 16"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div style="text-align:center;padding:32px 0">
+        <div class="rider-pulse" style="margin:0 auto 20px;width:16px;height:16px" aria-hidden="true"></div>
+        <p id="track-msg" style="font-size:.9375rem;font-weight:500;color:var(--g5)">Finding your rider…</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<!-- VERSION STAMP -->
+<div class="vstamp">v2-0001</div>
+
+<script>
+// ══════════════════════════════════════════════
+// CONFIG — replace with real values before launch
+// ══════════════════════════════════════════════
+const SUPABASE_URL  = 'https://YOUR_PROJECT.supabase.co';
+const SUPABASE_ANON = 'YOUR_ANON_KEY';
+const PK_KEY        = 'pk_test_REPLACE_ME';
+
+const supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// ── STATE ──
+let _req    = null;   // current request row
+let _rider  = null;   // assigned rider row
+let _fare   = 0;      // fare in naira
+let _svc    = '';     // 'school' | 'market' | 'gas'
+
+// ══════════════════════════════════════════════
+// MODAL HELPERS
+// ══════════════════════════════════════════════
+function openModal(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  const firstFocusable = el.querySelector('input, select, button, a');
+  if (firstFocusable) setTimeout(() => firstFocusable.focus(), 50);
+}
+
+function closeModal(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// Escape key closes top-most modal
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  const open = [...document.querySelectorAll('.modal-overlay.show')];
+  if (open.length) closeModal(open[open.length - 1].id);
+});
+
+// ══════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════
+let _toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ' ' + type : '');
+  // force reflow
+  t.getBoundingClientRect();
+  t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+// ══════════════════════════════════════════════
+// FORM HELPERS
+// ══════════════════════════════════════════════
+function setLoading(btn, loading) {
+  const txt = btn.querySelector('.btn-text');
+  const existing = btn.querySelector('.spinner');
+  if (loading) {
+    btn.disabled = true;
+    if (txt) txt.style.opacity = '0.6';
+    if (!existing) {
+      const s = document.createElement('span');
+      s.className = 'spinner';
+      s.setAttribute('aria-hidden', 'true');
+      btn.insertBefore(s, txt);
+    }
+  } else {
+    btn.disabled = false;
+    if (txt) txt.style.opacity = '1';
+    if (existing) existing.remove();
+  }
+}
+
+function validateField(input) {
+  const grp = input.closest('.form-group');
+  if (!grp) return true;
+  const valid = input.checkValidity() && input.value.trim() !== '';
+  grp.classList.toggle('has-error', !valid);
+  return valid;
+}
+
+function validateForm(form) {
+  const fields = form.querySelectorAll('[required]');
+  let ok = true;
+  fields.forEach(f => { if (!validateField(f)) ok = false; });
+  return ok;
+}
+
+function fmtNGN(n) {
+  return '₦' + n.toLocaleString('en-NG');
+}
+
+// ── Fare updaters ──
+function updateMarketFare() {
+  const sel = document.getElementById('mk-market');
+  const val = parseInt(sel.value) || 0;
+  const el  = document.getElementById('mk-fare');
+  _fare = val;
+  el.textContent = val ? fmtNGN(val) : '₦—';
+}
+
+function updateGasFare() {
+  const sizeEl = document.getElementById('gs-size');
+  const qtyEl  = document.getElementById('gs-qty');
+  const price  = parseInt(sizeEl.value) || 0;
+  const qty    = parseInt(qtyEl.value) || 1;
+  _fare = price * qty;
+  const el = document.getElementById('gs-fare');
+  el.textContent = _fare ? fmtNGN(_fare) : '₦—';
+  // update note
+  const noteEl = el.closest('.fare-box').querySelector('.fare-box__note');
+  if (price && qty > 1) {
+    noteEl.textContent = qty + ' × ' + fmtNGN(price) + ' · incl. delivery';
+  } else if (price) {
+    noteEl.textContent = 'Gas + delivery, home drop-off';
+  } else {
+    noteEl.textContent = 'Select cylinder size to see price';
+  }
+}
+
+// ══════════════════════════════════════════════
+// SUBMIT HANDLERS
+// ══════════════════════════════════════════════
+async function submitRequest(payload, formId, modalId) {
+  const form = document.getElementById(formId);
+  const btn  = form.querySelector('.btn-primary');
+  setLoading(btn, true);
+  try {
+    // Insert into requests
+    const { data: req, error: reqErr } = await supa
+      .from('requests')
+      .insert({ ...payload, status: 'pending' })
+      .select()
+      .single();
+    if (reqErr) throw reqErr;
+    _req = req;
+
+    // Assign rider via RPC
+    const { data: rider, error: riderErr } = await supa
+      .rpc('assign_next_rider', { request_id: req.id });
+    if (riderErr) throw riderErr;
+    _rider = rider;
+
+    closeModal(modalId);
+    populatePayModal();
+    openModal('m-pay');
+  } catch (err) {
+    console.error(err);
+    showToast('Something went wrong. Please try again.', 'error');
+  } finally {
+    setLoading(btn, false);
+  }
+}
+
+// School run
+document.getElementById('school-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!validateForm(e.target)) return;
+  const days = [...document.querySelectorAll('input[name="sc-days"]:checked')].map(c => c.value);
+  _fare = 2000;
+  _svc  = 'school';
+  await submitRequest({
+    service: 'school',
+    customer_name: document.getElementById('sc-name').value.trim(),
+    customer_phone: document.getElementById('sc-phone').value.trim(),
+    child_name: document.getElementById('sc-child').value.trim(),
+    school: document.getElementById('sc-school').value,
+    pickup_address: document.getElementById('sc-address').value.trim(),
+    days: days.join(','),
+    pickup_time: document.getElementById('sc-time').value,
+    fare: _fare
+  }, 'school-form', 'm-school');
+});
+
+// Market run
+document.getElementById('market-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!validateForm(e.target)) return;
+  if (!_fare) { showToast('Please select a market to see the fare', 'error'); return; }
+  _svc = 'market';
+  await submitRequest({
+    service: 'market',
+    customer_name: document.getElementById('mk-name').value.trim(),
+    customer_phone: document.getElementById('mk-phone').value.trim(),
+    market: document.getElementById('mk-market').options[document.getElementById('mk-market').selectedIndex].text,
+    pickup_address: document.getElementById('mk-address').value.trim(),
+    notes: document.getElementById('mk-notes').value.trim(),
+    fare: _fare
+  }, 'market-form', 'm-market');
+});
+
+// Gas refill
+document.getElementById('gas-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!validateForm(e.target)) return;
+  if (!_fare) { showToast('Please select a cylinder size to see the fare', 'error'); return; }
+  _svc = 'gas';
+  const sizeEl = document.getElementById('gs-size');
+  await submitRequest({
+    service: 'gas',
+    customer_name: document.getElementById('gs-name').value.trim(),
+    customer_phone: document.getElementById('gs-phone').value.trim(),
+    cylinder_size: sizeEl.options[sizeEl.selectedIndex].text,
+    cylinder_qty: parseInt(document.getElementById('gs-qty').value),
+    delivery_address: document.getElementById('gs-address').value.trim(),
+    fare: _fare
+  }, 'gas-form', 'm-gas');
+});
+
+// Inline validation on blur
+document.querySelectorAll('.form-input[required], .form-select[required]').forEach(el => {
+  el.addEventListener('blur', () => validateField(el));
+  el.addEventListener('change', () => validateField(el));
+});
+
+// ══════════════════════════════════════════════
+// PAY MODAL
+// ══════════════════════════════════════════════
+function populatePayModal() {
+  if (!_rider) return;
+  const initial = (_rider.name || 'R').charAt(0).toUpperCase();
+  document.getElementById('pay-avatar').textContent = initial;
+  document.getElementById('pay-rider-name').textContent = _rider.name || 'Your Rider';
+  document.getElementById('pay-keke-id').textContent   = _rider.keke_id ? 'Keke · ' + _rider.keke_id : 'Verified rider';
+  const labels = { school: 'School Run', market: 'Market Run', gas: 'Gas Refill' };
+  document.getElementById('pay-service-label').textContent = labels[_svc] || 'Service';
+  document.getElementById('pay-amount').textContent = fmtNGN(_fare);
+}
+
+// ══════════════════════════════════════════════
+// PAYSTACK
+// ══════════════════════════════════════════════
+function initiatePaystack() {
+  if (!_req || !_rider) return;
+  const btn = document.getElementById('pay-btn');
+  setLoading(btn, true);
+  try {
+    const handler = PaystackPop.setup({
+      key: PK_KEY,
+      email: _req.customer_phone.replace(/\s/g, '') + '@drop.ng',
+      amount: _fare * 100,
+      currency: 'NGN',
+      ref: 'DROP_' + _req.id + '_' + Date.now(),
+      metadata: { request_id: _req.id, rider_id: _rider.id },
+      callback: async function(response) {
+        setLoading(btn, false);
+        await onPaymentSuccess(response.reference);
+      },
+      onClose: function() {
+        setLoading(btn, false);
+      }
+    });
+    handler.openIframe();
+  } catch (err) {
+    setLoading(btn, false);
+    showToast('Could not open payment. Please try again.', 'error');
+  }
+}
+
+async function onPaymentSuccess(ref) {
+  // Mark request as paid in Supabase
+  try {
+    await supa.from('requests').update({
+      status: 'paid',
+      paystack_ref: ref
+    }).eq('id', _req.id);
+  } catch (err) {
+    console.error('DB update failed', err);
+  }
+  closeModal('m-pay');
+  populateDoneModal();
+  openModal('m-done');
+  // Persist for tracking
+  localStorage.setItem('drop_last_req', JSON.stringify({ req_id: _req.id, rider_id: _rider.id }));
+}
+
+// ══════════════════════════════════════════════
+// DONE MODAL
+// ══════════════════════════════════════════════
+function populateDoneModal() {
+  if (!_rider) return;
+  document.getElementById('done-rider-name').textContent = _rider.name || 'Your Rider';
+  document.getElementById('done-call').href = 'tel:' + (_rider.phone || '');
+  const waNum = (_rider.whatsapp || _rider.phone || '').replace(/\D/g, '');
+  const waMsg = encodeURIComponent('Hi, I just booked a Drop service. Are you on your way?');
+  document.getElementById('done-wa').href = 'https://wa.me/' + waNum + '?text=' + waMsg;
+}
+
+function guardContact(el) {
+  if (!_rider || !_rider.phone) {
+    showToast('Rider details not available yet. Please wait.', 'error');
+    return false;
+  }
+  return true;
+}
+</script>
+</body>
+</html>

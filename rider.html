@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Drop Rider Dashboard — view and manage your assigned trips.">
+<title>Drop — Rider Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+:root {
+  --y: #FFD600;
+  --y-dim: #E6C000;
+  --b: #0A0A0A;
+  --w: #FAFAF5;
+  --g1: #F0F0E8;
+  --g2: #D8D8D0;
+  --g5: #787870;
+  --green: #16A34A;
+  --green-bg: #F0FDF4;
+  --green-border: #BBF7D0;
+  --red: #DC2626;
+  --red-bg: #FEF2F2;
+  --shadow: 4px 4px 0px 0px var(--b);
+  --transition: 150ms ease-out;
+  --font-head: 'Montserrat', sans-serif;
+  --font-body: 'Poppins', sans-serif;
+  --r: 4px;
+  --r-lg: 10px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: var(--font-body);
+  background: var(--g1);
+  color: var(--b);
+  line-height: 1.5;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: var(--font-body); font-size: 1rem; cursor: pointer; }
+
+/* ── UTILS ── */
+.sr-only { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0; }
+
+/* ══════════════════════════════════════
+   SIGN-IN SCREEN
+══════════════════════════════════════ */
+#screen-signin {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+.signin-top {
+  background: var(--b);
+  padding: 40px 24px 48px;
+  position: relative;
+  overflow: hidden;
+}
+.signin-top::before {
+  content: '';
+  position: absolute; top: -40px; right: -40px;
+  width: 160px; height: 160px;
+  background: rgba(255,214,0,.08);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.signin-top::after {
+  content: '';
+  position: absolute; bottom: -20px; left: 16px;
+  width: 80px; height: 80px;
+  background: rgba(255,214,0,.05);
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+.signin-logo {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 32px;
+  position: relative; z-index: 1;
+}
+.signin-logo-mark {
+  width: 36px; height: 36px;
+  background: var(--y);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+}
+.signin-logo-mark svg { width: 22px; height: 22px; }
+.signin-wordmark {
+  font-family: var(--font-head);
+  font-size: 1.375rem;
+  font-weight: 900;
+  color: var(--w);
+  letter-spacing: -0.5px;
+}
+.signin-wordmark span { color: var(--y); }
+.signin-headline {
+  font-family: var(--font-head);
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--w);
+  letter-spacing: -1px;
+  line-height: 1.05;
+  position: relative; z-index: 1;
+  margin-bottom: 8px;
+}
+.signin-headline em {
+  color: var(--y);
+  font-style: normal;
+}
+.signin-sub {
+  font-size: 0.875rem;
+  font-weight: 300;
+  color: rgba(250,250,245,.5);
+  position: relative; z-index: 1;
+}
+.signin-form-wrap {
+  flex: 1;
+  background: var(--w);
+  padding: 32px 24px;
+  border-radius: 20px 20px 0 0;
+  margin-top: -16px;
+  position: relative; z-index: 2;
+}
+.form-label {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--g5);
+  margin-bottom: 6px;
+}
+.form-input {
+  width: 100%;
+  height: 52px;
+  padding: 0 16px;
+  background: var(--g1);
+  border: 2px solid var(--g2);
+  border-radius: var(--r);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--b);
+  appearance: none;
+  outline: none;
+  transition: border-color var(--transition), background var(--transition);
+  font-family: var(--font-body);
+}
+.form-input:focus { border-color: var(--b); background: #fff; }
+.form-input::placeholder { color: var(--g5); font-weight: 300; }
+.form-group { margin-bottom: 20px; }
+.form-error {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--red);
+  margin-top: 6px;
+  display: none;
+}
+.form-group.has-error .form-input { border-color: var(--red); background: var(--red-bg); }
+.form-group.has-error .form-error { display: block; }
+
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; height: 52px;
+  border: none;
+  border-radius: var(--r);
+  font-family: var(--font-head);
+  font-size: 0.9375rem;
+  font-weight: 800;
+  transition: transform var(--transition), box-shadow var(--transition);
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  cursor: pointer;
+}
+.btn:focus-visible { outline: 3px solid var(--b); outline-offset: 2px; }
+.btn-primary {
+  background: var(--y);
+  color: var(--b);
+  box-shadow: var(--shadow);
+}
+.btn-primary:hover { transform: translate(-1px,-1px); box-shadow: 5px 5px 0 0 var(--b); }
+.btn-primary:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 0 var(--b); }
+.btn-primary:disabled { background: var(--g2); color: var(--g5); box-shadow: none; transform: none; cursor: not-allowed; }
+.btn-outline {
+  background: transparent;
+  color: var(--b);
+  border: 2px solid var(--b);
+  height: 44px;
+  font-size: 0.875rem;
+  margin-top: 12px;
+}
+.btn-outline:hover { background: var(--g1); }
+.btn .spinner {
+  width: 18px; height: 18px;
+  border: 2.5px solid rgba(10,10,10,.2);
+  border-top-color: var(--b);
+  border-radius: 50%;
+  animation: spin 600ms linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ══════════════════════════════════════
+   DASHBOARD SCREEN
+══════════════════════════════════════ */
+#screen-dash { display: none; min-height: 100dvh; flex-direction: column; }
+#screen-dash.active { display: flex; }
+
+/* Header bar */
+.dash-header {
+  background: var(--b);
+  padding: 0 20px;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+  border-bottom: 2px solid rgba(255,214,0,.25);
+}
+.dash-header-left { display: flex; align-items: center; gap: 12px; }
+.dash-logo-mark {
+  width: 30px; height: 30px;
+  background: var(--y);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+}
+.dash-logo-mark svg { width: 18px; height: 18px; }
+.dash-rider-name {
+  font-family: var(--font-head);
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: var(--w);
+  letter-spacing: -0.3px;
+}
+.dash-status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  display: inline-block;
+  margin-right: 4px;
+  animation: statusPulse 2s ease-in-out infinite;
+}
+@keyframes statusPulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
+.dash-status {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: rgba(250,250,245,.45);
+  display: flex; align-items: center;
+}
+.btn-signout {
+  border: none; background: transparent;
+  color: rgba(250,250,245,.4);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: var(--r);
+  transition: color var(--transition), background var(--transition);
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-signout:hover { color: var(--w); background: rgba(255,255,255,.06); }
+
+/* Refresh bar */
+.refresh-bar {
+  background: var(--b);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  padding: 0 20px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.refresh-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: rgba(250,250,245,.3);
+  letter-spacing: 0.5px;
+}
+.btn-refresh {
+  border: 1.5px solid rgba(255,214,0,.3);
+  background: transparent;
+  color: var(--y);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--r);
+  padding: 5px 12px;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  transition: background var(--transition), border-color var(--transition);
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-refresh:hover { background: rgba(255,214,0,.08); border-color: var(--y); }
+.btn-refresh svg { width: 14px; height: 14px; }
+.btn-refresh.spinning svg { animation: spin 800ms linear infinite; }
+
+/* Trip list */
+.trips-body { flex: 1; padding: 20px; }
+.trips-section-title {
+  font-family: var(--font-head);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--g5);
+  margin-bottom: 12px;
+}
+
+/* Trip card */
+.trip-card {
+  background: var(--w);
+  border: 2px solid var(--b);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+  overflow: hidden;
+  animation: cardIn 300ms ease-out both;
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.trip-card__top {
+  padding: 16px 16px 12px;
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.trip-svc-icon {
+  width: 44px; height: 44px;
+  border-radius: var(--r);
+  background: var(--b);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.trip-svc-icon svg { width: 22px; height: 22px; color: var(--y); }
+.trip-meta { flex: 1; min-width: 0; }
+.trip-service-name {
+  font-family: var(--font-head);
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: var(--b);
+  margin-bottom: 2px;
+}
+.trip-customer {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--g5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.trip-fare {
+  font-family: var(--font-head);
+  font-size: 1.125rem;
+  font-weight: 900;
+  color: var(--green);
+  letter-spacing: -0.5px;
+  flex-shrink: 0;
+}
+.trip-card__details {
+  border-top: 1.5px solid var(--g1);
+  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.trip-detail {}
+.trip-detail__label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--g5);
+  margin-bottom: 2px;
+}
+.trip-detail__value {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--b);
+  word-break: break-word;
+}
+.trip-detail.full { grid-column: 1 / -1; }
+
+/* Contact row */
+.trip-contact-row {
+  border-top: 1.5px solid var(--g1);
+  padding: 12px 16px;
+  display: flex; gap: 8px;
+}
+.trip-contact-btn {
+  flex: 1;
+  height: 40px;
+  border-radius: var(--r);
+  border: none;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  font-family: var(--font-head);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: transform var(--transition), opacity var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+.trip-contact-btn:active { transform: scale(0.97); }
+.trip-contact-btn--call { background: var(--g1); color: var(--b); border: 1.5px solid var(--g2); }
+.trip-contact-btn--call:hover { background: var(--g2); }
+.trip-contact-btn--wa { background: #25D366; color: #fff; }
+.trip-contact-btn svg { width: 16px; height: 16px; }
+
+/* Done button */
+.trip-done-row {
+  border-top: 1.5px solid var(--g1);
+  padding: 12px 16px;
+}
+.btn-done {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: var(--r);
+  background: var(--b);
+  color: var(--y);
+  font-family: var(--font-head);
+  font-size: 0.875rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition), opacity var(--transition);
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 3px 3px 0 0 var(--y-dim);
+}
+.btn-done:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 0 var(--y-dim); }
+.btn-done:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 0 var(--y-dim); }
+.btn-done:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-done svg { width: 18px; height: 18px; }
+.btn-done .spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,214,0,.3);
+  border-top-color: var(--y);
+  border-radius: 50%;
+  animation: spin 600ms linear infinite;
+}
+
+/* Badge */
+.trip-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  border-radius: 99px;
+  padding: 3px 10px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.trip-badge--paid { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+.trip-badge--done { background: var(--g1); color: var(--g5); border: 1px solid var(--g2); }
+.trip-badge svg { width: 10px; height: 10px; }
+
+/* ── COMPLETED SECTION ── */
+.completed-section { margin-top: 28px; }
+.completed-card {
+  background: var(--w);
+  border: 1.5px solid var(--g2);
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 12px;
+  opacity: 0.72;
+}
+.completed-icon {
+  width: 36px; height: 36px;
+  border-radius: var(--r);
+  background: var(--g1);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.completed-icon svg { width: 18px; height: 18px; color: var(--g5); }
+.completed-meta { flex: 1; min-width: 0; }
+.completed-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--b);
+  margin-bottom: 2px;
+}
+.completed-time {
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: var(--g5);
+}
+.completed-fare {
+  font-family: var(--font-head);
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: var(--g5);
+}
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center;
+  padding: 56px 24px;
+}
+.empty-icon {
+  width: 80px; height: 80px;
+  background: var(--b);
+  border-radius: var(--r-lg);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+  position: relative;
+}
+.empty-icon svg { width: 40px; height: 40px; color: var(--y); }
+.empty-icon::after {
+  content: 'ZZZ';
+  position: absolute;
+  top: -12px; right: -14px;
+  font-family: var(--font-head);
+  font-size: 0.625rem;
+  font-weight: 900;
+  color: var(--g5);
+  letter-spacing: 1px;
+}
+.empty-title {
+  font-family: var(--font-head);
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--b);
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+.empty-desc {
+  font-size: 0.875rem;
+  font-weight: 300;
+  color: var(--g5);
+  line-height: 1.6;
+  max-width: 260px;
+  margin: 0 auto;
+}
+
+/* ── LOADING SKELETON ── */
+.skeleton-card {
+  background: var(--w);
+  border: 2px solid var(--b);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.skeleton-line {
+  height: 14px;
+  background: linear-gradient(90deg, var(--g1) 25%, var(--g2) 50%, var(--g1) 75%);
+  background-size: 200% 100%;
+  border-radius: 4px;
+  animation: shimmer 1.4s ease-in-out infinite;
+  margin-bottom: 10px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.skeleton-line.short { width: 55%; }
+.skeleton-line.medium { width: 75%; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(120%);
+  z-index: 9999;
+  background: var(--b);
+  color: var(--w);
+  padding: 12px 20px;
+  border-radius: 99px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  max-width: calc(100vw - 40px);
+  text-align: center;
+  transition: transform 280ms cubic-bezier(.32,.72,0,1);
+  border-left: 3px solid var(--y);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.success { border-left-color: var(--green); }
+.toast.error { border-left-color: var(--red); }
+
+/* ── CONFIRM MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  display: none; align-items: flex-end;
+}
+.modal-overlay.show { display: flex; }
+.modal-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(10,10,10,.7);
+  animation: bdin 200ms ease-out;
+}
+@keyframes bdin { from{opacity:0} to{opacity:1} }
+.modal-sheet {
+  position: relative; z-index: 1;
+  background: var(--w);
+  width: 100%;
+  border-radius: 16px 16px 0 0;
+  animation: slideUp 280ms cubic-bezier(.32,.72,0,1);
+  padding: 20px;
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.modal-handle {
+  width: 40px; height: 4px;
+  background: var(--g2); border-radius: 99px;
+  margin: 0 auto 20px;
+}
+.confirm-title {
+  font-family: var(--font-head);
+  font-size: 1.125rem; font-weight: 900;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+.confirm-sub {
+  font-size: 0.8125rem; font-weight: 300;
+  color: var(--g5); margin-bottom: 24px;
+  line-height: 1.5;
+}
+.confirm-actions { display: flex; flex-direction: column; gap: 10px; }
+.btn-confirm-yes {
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  height:52px; border:none; border-radius:var(--r);
+  background:var(--green); color:#fff;
+  font-family:var(--font-head); font-size:.9375rem; font-weight:800;
+  cursor:pointer;
+  box-shadow: 4px 4px 0 0 #0a5c24;
+  transition: transform var(--transition), box-shadow var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-confirm-yes:hover { transform: translate(-1px,-1px); box-shadow: 5px 5px 0 0 #0a5c24; }
+.btn-confirm-yes:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 0 #0a5c24; }
+.btn-confirm-no {
+  height:44px; border: 2px solid var(--g2); border-radius:var(--r);
+  background:transparent; color:var(--g5);
+  font-family:var(--font-head); font-size:.875rem; font-weight:700;
+  cursor:pointer;
+  transition: border-color var(--transition), color var(--transition);
+}
+.btn-confirm-no:hover { border-color: var(--b); color: var(--b); }
+
+/* ── VSTAMP ── */
+.vstamp {
+  position:fixed;bottom:6px;right:8px;
+  font-size:.6rem;font-weight:500;
+  color:rgba(0,0,0,.15);pointer-events:none;
+  z-index:9998;font-family:monospace;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SIGN-IN SCREEN
+══════════════════════════════════════ -->
+<div id="screen-signin">
+  <div class="signin-top">
+    <div class="signin-logo">
+      <div class="signin-logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 20 20" fill="none">
+          <path d="M10 2C10 2 4 8 4 12.5C4 15.8 6.7 18.5 10 18.5C13.3 18.5 16 15.8 16 12.5C16 8 10 2 10 2Z" fill="#0A0A0A"/>
+        </svg>
+      </div>
+      <span class="signin-wordmark">Drop<span>.</span></span>
+    </div>
+    <h1 class="signin-headline">Rider<br><em>Sign-in.</em></h1>
+    <p class="signin-sub">Enter your phone number to see your trips</p>
+  </div>
+
+  <div class="signin-form-wrap">
+    <form id="signin-form" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="rider-phone">Your phone number</label>
+        <input
+          id="rider-phone"
+          class="form-input"
+          type="tel"
+          placeholder="080XXXXXXXXX"
+          autocomplete="tel"
+          required
+          inputmode="tel"
+        >
+        <p class="form-error" role="alert">Please enter a valid phone number</p>
+      </div>
+      <button type="submit" class="btn btn-primary" id="signin-btn">
+        <span class="btn-text">View My Trips</span>
+      </button>
+    </form>
+    <div style="margin-top:28px;padding-top:20px;border-top:1.5px solid var(--g2)">
+      <p style="font-size:.8125rem;font-weight:300;color:var(--g5);text-align:center;line-height:1.6">
+        Only trips with <strong style="font-weight:600;color:var(--b)">paid</strong> status will appear.<br>
+        Not registered? Contact the Drop admin.
+      </p>
+    </div>
+    <div style="margin-top:24px;text-align:center">
+      <a href="/" style="font-size:.8125rem;font-weight:500;color:var(--g5);">← Back to main site</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     DASHBOARD SCREEN
+══════════════════════════════════════ -->
+<div id="screen-dash">
+
+  <!-- Header -->
+  <header class="dash-header" role="banner">
+    <div class="dash-header-left">
+      <div class="dash-logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 20 20" fill="none">
+          <path d="M10 2C10 2 4 8 4 12.5C4 15.8 6.7 18.5 10 18.5C13.3 18.5 16 15.8 16 12.5C16 8 10 2 10 2Z" fill="#0A0A0A"/>
+        </svg>
+      </div>
+      <div>
+        <div class="dash-rider-name" id="header-rider-name">Rider</div>
+        <div class="dash-status">
+          <span class="dash-status-dot" aria-hidden="true"></span>
+          Standby
+        </div>
+      </div>
+    </div>
+    <button class="btn-signout" onclick="signOut()" aria-label="Sign out">Sign out</button>
+  </header>
+
+  <!-- Refresh bar -->
+  <div class="refresh-bar">
+    <span class="refresh-label" id="last-updated">Loading…</span>
+    <button class="btn-refresh" id="refresh-btn" onclick="loadTrips()" aria-label="Refresh trips">
+      <svg id="refresh-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 8A7 7 0 1014 5M14 1v4h-4"/>
+      </svg>
+      Refresh
+    </button>
+  </div>
+
+  <!-- Trip list -->
+  <main class="trips-body" id="trips-body" role="main" aria-live="polite" aria-label="Your assigned trips">
+    <!-- populated by JS -->
+  </main>
+
+</div>
+
+<!-- CONFIRM DONE MODAL -->
+<div id="m-confirm" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="modal-backdrop" onclick="closeConfirm()"></div>
+  <div class="modal-sheet">
+    <div class="modal-handle" aria-hidden="true"></div>
+    <h2 class="confirm-title" id="confirm-title">Mark as completed?</h2>
+    <p class="confirm-sub" id="confirm-sub">This will mark the trip as done. The customer will be notified.</p>
+    <div class="confirm-actions">
+      <button class="btn-confirm-yes" id="confirm-yes-btn" onclick="confirmDone()">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4 4 8-8"/></svg>
+        Yes, Mark Done
+      </button>
+      <button class="btn-confirm-no" onclick="closeConfirm()">Not yet</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<!-- VERSION STAMP -->
+<div class="vstamp">v2-0001</div>
+
+<script>
+// ══════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════
+const SUPABASE_URL  = 'https://YOUR_PROJECT.supabase.co';
+const SUPABASE_ANON = 'YOUR_ANON_KEY';
+const supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// ── STATE ──
+let _riderPhone = '';
+let _riderRow   = null;
+let _pendingDoneId = null;
+let _pollInterval  = null;
+
+// ══════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════
+let _toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ' ' + type : '');
+  t.getBoundingClientRect();
+  t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+// ══════════════════════════════════════════════
+// LOADING STATE HELPERS
+// ══════════════════════════════════════════════
+function setLoading(btn, on) {
+  const txt = btn.querySelector('.btn-text');
+  const existing = btn.querySelector('.spinner');
+  if (on) {
+    btn.disabled = true;
+    if (txt) txt.style.opacity = '0.6';
+    if (!existing) {
+      const s = document.createElement('span');
+      s.className = 'spinner';
+      s.setAttribute('aria-hidden', 'true');
+      btn.insertBefore(s, txt);
+    }
+  } else {
+    btn.disabled = false;
+    if (txt) txt.style.opacity = '1';
+    if (existing) existing.remove();
+  }
+}
+
+function fmtNGN(n) {
+  return '₦' + Number(n).toLocaleString('en-NG');
+}
+
+function fmtTime(iso) {
+  if (!iso) return '—';
+  try {
+    return new Date(iso).toLocaleString('en-NG', {
+      day: 'numeric', month: 'short',
+      hour: '2-digit', minute: '2-digit',
+      hour12: true
+    });
+  } catch { return iso; }
+}
+
+// ══════════════════════════════════════════════
+// SIGN-IN
+// ══════════════════════════════════════════════
+document.getElementById('signin-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const phoneInput = document.getElementById('rider-phone');
+  const phone = phoneInput.value.trim();
+  if (!phone || phone.length < 10) {
+    phoneInput.closest('.form-group').classList.add('has-error');
+    return;
+  }
+  phoneInput.closest('.form-group').classList.remove('has-error');
+  _riderPhone = phone;
+
+  const btn = document.getElementById('signin-btn');
+  setLoading(btn, true);
+
+  try {
+    // Look up rider in standby_riders table
+    const { data: riders, error } = await supa
+      .from('standby_riders')
+      .select('*')
+      .eq('phone', phone)
+      .limit(1);
+
+    if (error) throw error;
+
+    if (!riders || riders.length === 0) {
+      showToast('Phone number not found. Contact the Drop admin.', 'error');
+      setLoading(btn, false);
+      return;
+    }
+
+    _riderRow = riders[0];
+    localStorage.setItem('drop_rider_phone', phone);
+    switchToDash();
+  } catch (err) {
+    console.error(err);
+    showToast('Could not sign in. Check your connection.', 'error');
+    setLoading(btn, false);
+  }
+});
+
+function switchToDash() {
+  document.getElementById('screen-signin').style.display = 'none';
+  const dash = document.getElementById('screen-dash');
+  dash.classList.add('active');
+  document.getElementById('header-rider-name').textContent =
+    _riderRow ? (_riderRow.name || 'Rider') : 'Rider';
+  loadTrips();
+  // Poll every 60 seconds
+  if (_pollInterval) clearInterval(_pollInterval);
+  _pollInterval = setInterval(loadTrips, 60000);
+}
+
+function signOut() {
+  if (_pollInterval) clearInterval(_pollInterval);
+  localStorage.removeItem('drop_rider_phone');
+  _riderPhone = '';
+  _riderRow   = null;
+  document.getElementById('screen-dash').classList.remove('active');
+  document.getElementById('screen-signin').style.display = '';
+  document.getElementById('rider-phone').value = '';
+  document.getElementById('signin-btn').disabled = false;
+}
+
+// Auto sign-in if saved
+(function autoSignIn() {
+  const saved = localStorage.getItem('drop_rider_phone');
+  if (saved) {
+    document.getElementById('rider-phone').value = saved;
+    _riderPhone = saved;
+    const btn = document.getElementById('signin-btn');
+    setLoading(btn, true);
+    supa.from('standby_riders').select('*').eq('phone', saved).limit(1)
+      .then(({ data, error }) => {
+        if (error || !data || !data.length) {
+          setLoading(btn, false);
+          localStorage.removeItem('drop_rider_phone');
+          return;
+        }
+        _riderRow = data[0];
+        switchToDash();
+      });
+  }
+})();
+
+// ══════════════════════════════════════════════
+// LOAD TRIPS
+// ══════════════════════════════════════════════
+async function loadTrips() {
+  const body = document.getElementById('trips-body');
+  const refreshBtn = document.getElementById('refresh-btn');
+  const refreshIcon = document.getElementById('refresh-icon');
+
+  if (!_riderRow) return;
+
+  // Spinning icon
+  refreshBtn.classList.add('spinning');
+  document.getElementById('last-updated').textContent = 'Refreshing…';
+
+  try {
+    const { data: trips, error } = await supa
+      .from('requests')
+      .select('*')
+      .eq('rider_id', _riderRow.id)
+      .in('status', ['paid', 'done'])
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    document.getElementById('last-updated').textContent =
+      'Updated ' + new Date().toLocaleTimeString('en-NG', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+    renderTrips(trips || []);
+  } catch (err) {
+    console.error(err);
+    document.getElementById('last-updated').textContent = 'Failed to load';
+    showToast('Could not load trips. Check your connection.', 'error');
+  } finally {
+    refreshBtn.classList.remove('spinning');
+  }
+}
+
+// ══════════════════════════════════════════════
+// RENDER TRIPS
+// ══════════════════════════════════════════════
+const SVC_ICONS = {
+  school: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="22" height="13" rx="2"/><path d="M1 11h22M8 6V4M16 6V4"/><circle cx="7" cy="19" r="1.5" fill="currentColor" stroke="none"/><circle cx="17" cy="19" r="1.5" fill="currentColor" stroke="none"/></svg>`,
+  market: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>`,
+  gas:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10v2a6 6 0 016 6v1a3 3 0 01-3 3h-1v4a2 2 0 01-2 2H7a2 2 0 01-2-2V8a5 5 0 015-5z"/><path d="M12 9v4M10 11h4"/></svg>`
+};
+
+const SVC_LABELS = { school: 'School Run', market: 'Market Run', gas: 'Gas Refill' };
+
+function renderTrips(trips) {
+  const body = document.getElementById('trips-body');
+  body.innerHTML = '';
+
+  const active    = trips.filter(t => t.status === 'paid');
+  const completed = trips.filter(t => t.status === 'done');
+
+  if (trips.length === 0) {
+    body.innerHTML = `
+      <div class="empty-state" role="status">
+        <div class="empty-icon" aria-hidden="true">
+          ${SVC_ICONS.school}
+        </div>
+        <h2 class="empty-title">No trips yet</h2>
+        <p class="empty-desc">When a customer books and pays for a trip, it will appear here. Pull to refresh.</p>
+      </div>`;
+    return;
+  }
+
+  // Active trips
+  if (active.length > 0) {
+    const section = document.createElement('div');
+    section.innerHTML = `<p class="trips-section-title">Active trips (${active.length})</p>`;
+    active.forEach((t, i) => {
+      const card = buildTripCard(t, i);
+      section.appendChild(card);
+    });
+    body.appendChild(section);
+  }
+
+  // Completed trips
+  if (completed.length > 0) {
+    const section = document.createElement('div');
+    section.className = 'completed-section';
+    section.innerHTML = `<p class="trips-section-title">Completed today</p>`;
+    completed.slice(0, 10).forEach(t => {
+      const card = buildCompletedCard(t);
+      section.appendChild(card);
+    });
+    body.appendChild(section);
+  }
+}
+
+function buildTripCard(trip, idx) {
+  const svc     = trip.service || 'school';
+  const icon    = SVC_ICONS[svc] || SVC_ICONS.school;
+  const label   = SVC_LABELS[svc] || svc;
+  const fare    = trip.fare ? fmtNGN(trip.fare) : '—';
+  const phone   = trip.customer_phone || '';
+  const waNum   = phone.replace(/\D/g, '');
+  const waMsg   = encodeURIComponent('Hi, I am your Drop rider. I am on my way!');
+
+  // Build detail rows
+  let detailsHTML = '';
+  if (svc === 'school') {
+    detailsHTML = `
+      <div class="trip-detail"><div class="trip-detail__label">Child</div><div class="trip-detail__value">${trip.child_name || '—'}</div></div>
+      <div class="trip-detail"><div class="trip-detail__label">School</div><div class="trip-detail__value">${trip.school || '—'}</div></div>
+      <div class="trip-detail"><div class="trip-detail__label">Pickup time</div><div class="trip-detail__value">${trip.pickup_time || '—'}</div></div>
+      <div class="trip-detail"><div class="trip-detail__label">Days</div><div class="trip-detail__value">${trip.days || '—'}</div></div>
+      <div class="trip-detail full"><div class="trip-detail__label">Address</div><div class="trip-detail__value">${trip.pickup_address || '—'}</div></div>`;
+  } else if (svc === 'market') {
+    detailsHTML = `
+      <div class="trip-detail"><div class="trip-detail__label">Market</div><div class="trip-detail__value">${trip.market || '—'}</div></div>
+      <div class="trip-detail"><div class="trip-detail__label">Booked</div><div class="trip-detail__value">${fmtTime(trip.created_at)}</div></div>
+      <div class="trip-detail full"><div class="trip-detail__label">Pickup from</div><div class="trip-detail__value">${trip.pickup_address || '—'}</div></div>
+      ${trip.notes ? `<div class="trip-detail full"><div class="trip-detail__label">Notes</div><div class="trip-detail__value">${trip.notes}</div></div>` : ''}`;
+  } else if (svc === 'gas') {
+    detailsHTML = `
+      <div class="trip-detail"><div class="trip-detail__label">Size</div><div class="trip-detail__value">${trip.cylinder_size || '—'}</div></div>
+      <div class="trip-detail"><div class="trip-detail__label">Quantity</div><div class="trip-detail__value">${trip.cylinder_qty || 1}</div></div>
+      <div class="trip-detail full"><div class="trip-detail__label">Deliver to</div><div class="trip-detail__value">${trip.delivery_address || '—'}</div></div>`;
+  }
+
+  const div = document.createElement('div');
+  div.className = 'trip-card';
+  div.style.animationDelay = (idx * 60) + 'ms';
+  div.innerHTML = `
+    <div class="trip-card__top">
+      <div class="trip-svc-icon" aria-hidden="true">${icon}</div>
+      <div class="trip-meta">
+        <div class="trip-service-name">${label}</div>
+        <div class="trip-customer">${trip.customer_name || 'Customer'} · ${phone}</div>
+      </div>
+      <div class="trip-fare" aria-label="Fare ${fare}">${fare}</div>
+    </div>
+    <div class="trip-card__details">${detailsHTML}</div>
+    <div class="trip-contact-row">
+      <a href="tel:${phone}" class="trip-contact-btn trip-contact-btn--call" aria-label="Call ${trip.customer_name || 'customer'}">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+        Call
+      </a>
+      <a href="https://wa.me/${waNum}?text=${waMsg}" class="trip-contact-btn trip-contact-btn--wa" target="_blank" rel="noopener" aria-label="WhatsApp ${trip.customer_name || 'customer'}">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.108.549 4.09 1.512 5.813L.057 23.5l5.83-1.43A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.796 9.796 0 01-4.992-1.368l-.356-.213-3.469.85.878-3.38-.232-.369A9.776 9.776 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182c5.43 0 9.818 4.388 9.818 9.818 0 5.43-4.388 9.818-9.818 9.818z"/></svg>
+        WhatsApp
+      </a>
+    </div>
+    <div class="trip-done-row">
+      <button class="btn-done" onclick="promptDone('${trip.id}', '${(trip.customer_name || 'customer').replace(/'/g, "\\'")}', '${label}')" aria-label="Mark trip for ${trip.customer_name || 'customer'} as done">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4 4 8-8"/></svg>
+        Mark as Done
+      </button>
+    </div>`;
+  return div;
+}
+
+function buildCompletedCard(trip) {
+  const svc   = trip.service || 'school';
+  const icon  = SVC_ICONS[svc] || SVC_ICONS.school;
+  const label = SVC_LABELS[svc] || svc;
+  const fare  = trip.fare ? fmtNGN(trip.fare) : '—';
+
+  const div = document.createElement('div');
+  div.className = 'completed-card';
+  div.innerHTML = `
+    <div class="completed-icon" aria-hidden="true">${icon}</div>
+    <div class="completed-meta">
+      <div class="completed-name">${trip.customer_name || 'Customer'} · ${label}</div>
+      <div class="completed-time">${fmtTime(trip.created_at)}</div>
+    </div>
+    <div class="completed-fare">${fare}</div>`;
+  return div;
+}
+
+// ══════════════════════════════════════════════
+// MARK DONE FLOW
+// ══════════════════════════════════════════════
+function promptDone(tripId, customerName, serviceLabel) {
+  _pendingDoneId = tripId;
+  document.getElementById('confirm-sub').textContent =
+    `Mark ${serviceLabel} for ${customerName} as completed?`;
+  document.getElementById('m-confirm').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeConfirm() {
+  document.getElementById('m-confirm').classList.remove('show');
+  document.body.style.overflow = '';
+  _pendingDoneId = null;
+}
+
+async function confirmDone() {
+  if (!_pendingDoneId) return;
+  const btn = document.getElementById('confirm-yes-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  try {
+    const { error } = await supa
+      .from('requests')
+      .update({ status: 'done', completed_at: new Date().toISOString() })
+      .eq('id', _pendingDoneId);
+
+    if (error) throw error;
+    closeConfirm();
+    showToast('Trip marked as done!', 'success');
+    await loadTrips();
+  } catch (err) {
+    console.error(err);
+    showToast('Could not update trip. Try again.', 'error');
+    btn.disabled = false;
+    btn.innerHTML = `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4 4 8-8"/></svg> Yes, Mark Done`;
+  }
+}
+
+// Escape to close
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeConfirm();
+});
+</script>
+</body>
+</html>
